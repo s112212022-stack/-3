@@ -1,0 +1,1196 @@
+!DOCTYPE html
+html lang=zh-TW
+head
+    meta charset=UTF-8
+    meta name=viewport content=width=device-width, initial-scale=1.0
+    titleG10 聯華電子 - 國際策略管理期末專案title
+    !-- Tailwind CSS --
+    script src=httpscdn.tailwindcss.comscript
+    !-- Google Fonts Inter & Noto Sans TC --
+    link href=httpsfonts.googleapis.comcss2family=Interwght@300;400;500;600;700;800&family=Noto+Sans+TCwght@300;400;500;700;900&display=swap rel=stylesheet
+    style
+        body {
+            font-family 'Inter', 'Noto Sans TC', sans-serif;
+            background-color #0b0f19;
+            color #f3f4f6;
+            overflow-x hidden;
+        }
+         隱藏滾動條但保持功能 
+        .no-scrollbar-webkit-scrollbar {
+            display none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style none;
+            scrollbar-width none;
+        }
+         玻璃擬物化特效 
+        .glass-panel {
+            background rgba(17, 24, 39, 0.7);
+            backdrop-filter blur(12px);
+            border 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background rgba(31, 41, 55, 0.4);
+            backdrop-filter blur(8px);
+            border 1px solid rgba(255, 255, 255, 0.05);
+            transition all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-cardhover {
+            background rgba(31, 41, 55, 0.6);
+            border-color rgba(59, 130, 246, 0.4);
+            box-shadow 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+        }
+         晶圓科技感裝飾 
+        .wafer-bg {
+            background radial-gradient(circle at 50% 50%, rgba(17, 24, 39, 0.6) 0%, rgba(11, 15, 25, 1) 100%);
+        }
+         卡片切換 3D 空間設定 
+        .carousel-container {
+            perspective 1200px;
+            transform-style preserve-3d;
+        }
+         重建卡片過渡動畫，使其流暢滾動、旋轉與放大 
+        .carousel-item {
+            transition transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.7s ease, border-color 0.4s ease;
+            transform-style preserve-3d;
+            backface-visibility hidden;
+        }
+         頁面切換全屏遮罩過渡 
+        .page-transition {
+            transition transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+        }
+         閃爍動畫 
+        @keyframes pulse-slow {
+            0%, 100% { opacity 0.2; }
+            50% { opacity 0.4; }
+        }
+        .pulse-bg {
+            animation pulse-slow 8s infinite;
+        }
+    style
+head
+body class=wafer-bg min-h-screen flex flex-col justify-between overflow-hidden
+
+    !-- 靜態科技背景線條 (素色且低調，不干擾視覺) --
+    div class=absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-10
+        svg class=w-full h-full xmlns=httpwww.w3.org2000svg
+            defs
+                pattern id=grid width=60 height=60 patternUnits=userSpaceOnUse
+                    path d=M 60 0 L 0 0 0 60 fill=none stroke=rgba(255, 255, 255, 0.15) stroke-width=1
+                pattern
+            defs
+            rect width=100% height=100% fill=url(#grid) 
+            circle cx=50% cy=50% r=35% fill=none stroke=rgba(59, 130, 246, 0.2) stroke-width=2 stroke-dasharray=10, 15 
+            circle cx=50% cy=50% r=20% fill=none stroke=rgba(59, 130, 246, 0.1) stroke-width=1 
+        svg
+    div
+
+    !-- 頁頂導覽列 (Navbar) --
+    header class=relative z-30 w-full px-6 lgpx-16 py-4 flex items-center justify-between border-b border-gray-80050 glass-panel
+        div class=flex items-center space-x-4
+            !-- 側邊選單開關按鈕 (Hamburger) --
+            button onclick=toggleSidebar() class=p-2 text-gray-400 hovertext-white hoverbg-gray-80060 rounded-xl transition-all focusoutline-none flex items-center justify-center border border-gray-800 hoverborder-gray-700
+                svg class=w-6 h-6 fill=none stroke=currentColor viewBox=0 0 24 24
+                    path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M4 6h16M4 12h16M4 18h16path
+                svg
+            button
+            div class=flex items-center space-x-3 cursor-pointer onclick=goToHome()
+                div class=w-9 h-9 bg-white rounded-md flex items-center justify-center p-1 shadow-lg shadow-blue-50020
+                    svg viewBox=0 0 120 40 fill=none xmlns=httpwww.w3.org2000svg class=w-full h-full
+                        text x=50% y=55% dominant-baseline=middle text-anchor=middle font-family=Arial, sans-serif font-weight=900 font-size=28 fill=#0033a0UMCtext
+                    svg
+                div
+                span class=text-lg font-bold tracking-wider text-white聯華電子span
+            div
+        div
+        
+        !-- 右側功能按鈕 (中英切換、明暗模式、語音導覽) --
+        div class=flex items-center space-x-1 mdspace-x-3
+            !-- 語音導覽 --
+            button class=p-2 text-gray-400 hovertext-white hoverbg-gray-80060 rounded-xl transition-all focusoutline-none flex items-center justify-center border border-transparent hoverborder-gray-700 title=語音導覽
+                svg class=w-5 h-5 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l4 4V4L9 8H7a2 2 0 00-2 2zpathsvg
+            button
+            !-- 明暗模式切換 --
+            button class=p-2 text-gray-400 hovertext-white hoverbg-gray-80060 rounded-xl transition-all focusoutline-none flex items-center justify-center border border-transparent hoverborder-gray-700 title=明暗模式
+                svg class=w-5 h-5 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646zpathsvg
+            button
+            !-- 中英切換 --
+            button class=px-3 py-1.5 text-xs font-bold text-gray-400 hovertext-white hoverbg-gray-80060 rounded-xl transition-all focusoutline-none border border-transparent hoverborder-gray-700 tracking-wider title=Language
+                中EN
+            button
+        div
+    header
+
+    !-- 側邊欄半透明背景遮罩 --
+    div id=sidebar-overlay onclick=toggleSidebar() class=fixed inset-0 bg-black60 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0div
+
+    !-- 側邊選單 (Collapsible Sidebar) --
+    div id=sidebar class=fixed top-0 left-0 h-full w-80 bg-[#090d16]98 border-r border-gray-80080 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl shadow-black80
+        div class=p-6 overflow-y-auto no-scrollbar flex-1
+            !-- 頂部商標與關閉按鈕 --
+            div class=flex items-center justify-between border-b border-gray-800 pb-5 mb-6
+                div class=flex items-center space-x-3
+                    div class=w-8 h-8 rounded bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center font-bold text-whiteUdiv
+                    span class=text-base font-bold tracking-wider text-white導覽選單span
+                div
+                button onclick=toggleSidebar() class=p-1.5 rounded-lg text-gray-400 hovertext-white hoverbg-gray-800 transition-colors focusoutline-none
+                    svg class=w-6 h-6 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M6 18L18 6M6 6l12 12pathsvg
+                button
+            div
+
+            !-- 選單內容列表 (完全對應圖片中的層級與紅色標示) --
+            nav class=space-y-2
+                !-- 1. 組員介紹 --
+                button onclick=jumpToSection(0) class=flex items-center space-x-3 w-full px-4 py-3 rounded-xl hoverbg-gray-80040 text-gray-300 hovertext-white font-medium transition-all text-left
+                    svg class=w-5 h-5 text-blue-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zpathsvg
+                    span組員介紹span
+                button
+
+                !-- 2. 公司介紹 (大標題，包含紅色框選小標題) --
+                div class=space-y-1
+                    button onclick=jumpToSection(1) class=flex items-center justify-between w-full px-4 py-3 rounded-xl hoverbg-gray-80040 text-gray-300 hovertext-white font-medium transition-all text-left
+                        div class=flex items-center space-x-3
+                            svg class=w-5 h-5 text-indigo-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1M9 11h1pathsvg
+                            span class=font-bold公司介紹span
+                        div
+                        span class=text-[10px] font-black text-red-500 bg-red-50010 px-2 py-0.5 rounded border border-red-50020大標題span
+                    button
+                    !-- 紅色框選小標題 --
+                    div class=pl-12 pr-4 py-1 space-y-1.5 border-l-2 border-red-50050 ml-6
+                        button onclick=jumpToSection(1, 'com-history') class=flex items-center text-xs text-gray-400 hovertext-red-400 py-1 transition-colors w-full text-left font-medium
+                            span class=w-1.5 h-1.5 rounded-full bg-red-500 mr-2span
+                            歷史沿革
+                        button
+                        button onclick=jumpToSection(1, 'com-org') class=flex items-center text-xs text-gray-400 hovertext-red-400 py-1 transition-colors w-full text-left font-medium
+                            span class=w-1.5 h-1.5 rounded-full bg-red-500 mr-2span
+                            組織架構
+                        button
+                        button onclick=jumpToSection(1, 'com-finance') class=flex items-center text-xs text-gray-400 hovertext-red-400 py-1 transition-colors w-full text-left font-medium
+                            span class=w-1.5 h-1.5 rounded-full bg-red-500 mr-2span
+                            財務資訊
+                        button
+                    div
+                div
+
+                !-- 3. 市場分析 --
+                button onclick=jumpToSection(2) class=flex items-center space-x-3 w-full px-4 py-3 rounded-xl hoverbg-gray-80040 text-gray-300 hovertext-white font-medium transition-all text-left
+                    svg class=w-5 h-5 text-purple-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2zpathsvg
+                    span市場分析span
+                button
+
+                !-- 4. 資源分析 (更新) --
+                button onclick=jumpToSection(3) class=flex items-center space-x-3 w-full px-4 py-3 rounded-xl hoverbg-gray-80040 text-gray-300 hovertext-white font-medium transition-all text-left
+                    svg class=w-5 h-5 text-emerald-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622pathsvg
+                    span資源分析span
+                button
+
+                !-- 5. 成長策略 --
+                button onclick=jumpToSection(4) class=flex items-center space-x-3 w-full px-4 py-3 rounded-xl hoverbg-gray-80040 text-gray-300 hovertext-white font-medium transition-all text-left
+                    svg class=w-5 h-5 text-amber-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M13 7h8m0 0v8m0-8l-8 8-4-4-6 6pathsvg
+                    span成長策略span
+                button
+
+                !-- 6. 團隊反思 --
+                button onclick=jumpToSection(5) class=flex items-center space-x-3 w-full px-4 py-3 rounded-xl hoverbg-gray-80040 text-gray-300 hovertext-white font-medium transition-all text-left
+                    svg class=w-5 h-5 text-pink-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72pathsvg
+                    span團隊反思span
+                button
+            nav
+        div
+
+        !-- 側邊選單底部學術資訊 --
+        div class=p-6 border-t border-gray-80080 bg-gray-95040 text-[10px] text-gray-500
+            p class=font-semibold text-gray-4001142 國際策略管理p
+            p class=mt-1指導教授：梅筱珍 教授p
+            p助教：戴子然 助教、王毓翰 助教p
+        div
+    div
+
+    !-- 主頁面區域 (Main Landing Page) --
+    main id=landing-page class=relative z-10 flex-1 flex flex-col justify-center items-center px-4 py-8 page-transition
+        
+        !-- 中央主視覺標語與標題 --
+        div class=text-center mb-6
+            p class=text-xs lgtext-sm tracking-[0.4em] uppercase text-blue-400 font-bold mb-3 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]
+                避開尖端．深耕特殊
+            p
+            h1 class=text-4xl lgtext-6xl font-black tracking-tight text-white mb-2
+                聯華電子 span class=bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparentUMCspan
+            h1
+        div
+
+        !-- 輪播滑動方框系統 (Carousel Container) --
+        div class=relative w-full max-w-4xl h-[260px] flex items-center justify-center carousel-container mb-8
+            
+            !-- 左滑鼠感應區域按鈕 (支援長按連續觸發) --
+            button onmousedown=startHold('prev') onmouseup=stopHold() onmouseleave=stopHold() ontouchstart=startHold('prev') ontouchend=stopHold() class=absolute left-2 lgleft-8 z-30 w-12 h-12 rounded-full glass-panel flex items-center justify-center hoverbg-gray-80080 transition-all border border-gray-700 hoverborder-blue-500 text-gray-400 hovertext-white focusoutline-none select-none
+                svg class=w-6 h-6 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M15 19l-7-7 7-7pathsvg
+            button
+
+            !-- 卡片容器 --
+            div id=carousel-track class=relative w-full h-full flex items-center justify-center overflow-visible
+                !-- 由 JavaScript 在 onload 時渲染生成，切換時僅更新樣式 --
+            div
+
+            !-- 右滑鼠感應區域按鈕 (支援長按連續觸發) --
+            button onmousedown=startHold('next') onmouseup=stopHold() onmouseleave=stopHold() ontouchstart=startHold('next') ontouchend=stopHold() class=absolute right-2 lgright-8 z-30 w-12 h-12 rounded-full glass-panel flex items-center justify-center hoverbg-gray-80080 transition-all border border-gray-700 hoverborder-blue-500 text-gray-400 hovertext-white focusoutline-none select-none
+                svg class=w-6 h-6 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M9 5l7 7-7 7pathsvg
+            button
+        div
+
+        !-- 鍵盤操作提示與進入按鈕 --
+        div class=flex flex-col items-center space-y-4
+            !-- 進入章節行動呼籲按鈕 --
+            button onclick=enterCurrentSection() class=relative group px-12 py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full font-bold text-white text-lg tracking-wider shadow-lg shadow-blue-60030 hovershadow-blue-60050 hoverfrom-blue-500 hoverto-indigo-500 transition-all duration-300 transform hover-translate-y-0.5 activetranslate-y-0 focusoutline-none overflow-hidden
+                span class=absolute inset-0 w-full h-full bg-white10 transform -skew-x-12 -translate-x-full group-hoveranimate-[shine_0.75s_ease-out]span
+                span class=relative z-10 flex items-center space-x-2
+                    span進入章節span
+                    svg class=w-5 h-5 group-hovertranslate-x-1 transition-transform fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M13 5l7 7-7 7M5 5l7 7-7 7pathsvg
+                span
+            button
+            style
+                @keyframes shine {
+                    100% { transform skewX(-12deg) translateX(100%); }
+                }
+            style
+            
+            !-- 操作輔助提示 --
+            div class=flex items-center space-x-2 text-xs text-gray-500
+                span class=px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700←  →span
+                span鍵盤 或 長按按鈕連續切換span
+                span class=mx-1span
+                span class=flex items-center space-x-1svg class=w-3 h-3 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2pathsvgspan
+                span滑鼠滾輪span
+            div
+        div
+
+    main
+
+    !-- 各子頁面獨立展示區 (預設隱藏，按 ENTER 觸發 3D 入場動畫) --
+    section id=content-container class=hidden fixed inset-0 z-40 bg-[#070a13] flex flex-col overflow-y-auto no-scrollbar
+        !-- 頂部浮動狀態欄 --
+        div class=sticky top-0 z-50 w-full px-6 py-4 bg-[#070a13]90 backdrop-blur-md border-b border-gray-800 flex justify-between items-center
+            div class=flex items-center space-x-4
+                button onclick=goToHome() class=flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-gray-800 hoverborder-gray-700 text-sm text-gray-400 hovertext-white transition-colors bg-gray-90050
+                    svg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M10 19l-7-7m0 0l7-7m-7 7h18pathsvg
+                    span返回大廳span
+                button
+                div class=h-4 w-px bg-gray-800div
+                span id=current-section-title class=text-lg font-bold text-whitespan
+            div
+            
+            !-- 橫向快捷切換 --
+            div class=flex space-x-2 text-xs text-gray-400 bg-gray-90080 p-1 rounded-lg border border-gray-80080
+                button onclick=switchContentSection(-1) class=p-1 hovertext-whitesvg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M15 19l-7-7 7-7pathsvgbutton
+                span id=current-section-index class=px-2 self-center1  6span
+                button onclick=switchContentSection(1) class=p-1 hovertext-whitesvg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M9 5l7 7-7 7pathsvgbutton
+            div
+        div
+
+        !-- 核心章節內容動態載入區 --
+        div id=content-display-box class=w-full max-w-6xl mx-auto px-6 py-10 flex-1
+            !-- 這裡將由 JavaScript 根據當前進入的主題渲染各頁面的 HTML 內容 --
+        div
+    section
+
+    !-- 頁腳資訊 (Footer) --
+    footer class=relative z-10 w-full py-6 lgpy-8 border-t border-gray-80050 glass-panel
+        div class=max-w-6xl mx-auto px-6 flex flex-col mdflex-row justify-between items-center text-xs text-gray-500 space-y-5 mdspace-y-0
+            !-- 課程與學術指導資訊 --
+            div class=flex flex-col space-y-2 text-center mdtext-left
+                div class=text-blue-400 font-black tracking-widest text-sm uppercase1142 國際策略管理div
+                div class=flex flex-col smflex-row smitems-center smspace-x-6 space-y-1 smspace-y-0
+                    divspan class=text-gray-400 font-semibold指導教授：spanspan class=text-white梅筱珍 教授spandiv
+                    divspan class=text-gray-400 font-semibold助教：spanspan class=text-white戴子然 助教span、span class=text-white王毓翰 助教spandiv
+                div
+            div
+            
+            !-- 版權與小組資訊 --
+            div class=text-center mdtext-right
+                p© 2026 國立暨南國際大學 國際策略管理課堂發表p
+                p class=text-[10px] text-gray-600 mt-1發表日期：2026.06.01  小組：G10 聯華電子p
+            div
+        div
+    footer
+
+    !-- JavaScript 核心邏輯 --
+    script
+         1. 各章節的設定與精華內容
+        const SECTIONS = [
+            {
+                title 組員介紹,
+                subtitle Team Members,
+                desc 1142 國際策略管理 G10 專案團隊分工與核心成員,
+                icon `svg class=w-8 h-8 text-blue-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0zpathsvg`,
+                content `
+                    div class=space-y-8 animate-[fadeIn_0.5s_ease-out]
+                        div class=border-b border-gray-800 pb-4
+                            h2 class=text-3xl font-extrabold text-whiteG10 專案團隊與分工h2
+                            p class=text-gray-400 text-sm mt-1本網頁為 1142 國際策略管理課程之「期末互動式學習網頁競賽」成果，深入剖析聯華電子 (UMC) 策略地位。p
+                        div
+                        
+                        !-- 核心團隊名單 --
+                        div class=grid grid-cols-1 mdgrid-cols-2 lggrid-cols-3 gap-6
+                            !-- 成員 1 --
+                            div class=glass-card p-6 rounded-2xl relative overflow-hidden group
+                                div class=absolute top-0 right-0 w-24 h-24 bg-blue-50010 rounded-bl-full transition-all group-hoverbg-blue-50020div
+                                div class=w-12 h-12 rounded-full bg-blue-60020 text-blue-400 flex items-center justify-center font-bold text-lg mb-4G1div
+                                h3 class=text-xl font-bold text-white mb-1策略規劃組h3
+                                p class=text-xs text-blue-400 mb-3 font-semibold負責：產業分析與策略研究p
+                                p class=text-sm text-gray-400專注於聯電「避開尖端、深耕特殊」之主要策略研究，分析 2228 奈米特殊製程及對應之 資源分析 評價。p
+                            div
+                            !-- 成員 2 --
+                            div class=glass-card p-6 rounded-2xl relative overflow-hidden group
+                                div class=absolute top-0 right-0 w-24 h-24 bg-purple-50010 rounded-bl-full transition-all group-hoverbg-purple-50020div
+                                div class=w-12 h-12 rounded-full bg-purple-60020 text-purple-400 flex items-center justify-center font-bold text-lg mb-4G2div
+                                h3 class=text-xl font-bold text-white mb-1數據分析組h3
+                                p class=text-xs text-purple-400 mb-3 font-semibold負責：財務解讀與市場占比p
+                                p class=text-sm text-gray-400解析聯電 2024~2025 年營收結構、產品營收比重（如 2228 奈米占 36% 的龍頭地位），以及與 Intel 合作的財務亮點。p
+                            div
+                            !-- 成員 3 --
+                            div class=glass-card p-6 rounded-2xl relative overflow-hidden group
+                                div class=absolute top-0 right-0 w-24 h-24 bg-emerald-50010 rounded-bl-full transition-all group-hoverbg-emerald-50020div
+                                div class=w-12 h-12 rounded-full bg-emerald-60020 text-emerald-400 flex items-center justify-center font-bold text-lg mb-4G3div
+                                h3 class=text-xl font-bold text-white mb-1網頁互動與設計組h3
+                                p class=text-xs text-emerald-400 mb-3 font-semibold負責：UI 介面開發與動態邏輯p
+                                p class=text-sm text-gray-400依據競賽標準與手繪 Wireframe，設計本網頁之鍵盤互動切換系統、流暢翻轉動畫、及高質感極簡風格。p
+                            div
+                        div
+
+                        !-- 競賽要求項目覆蓋率指標 --
+                        div class=glass-card p-6 rounded-2xl
+                            h3 class=text-lg font-bold text-white mb-4網頁內容要求覆蓋率 (Reminders Verification)h3
+                            div class=grid grid-cols-2 mdgrid-cols-5 gap-4 text-center
+                                div class=p-4 bg-gray-90040 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-400 mb-1組員與分工div
+                                    div class=text-sm font-bold text-emerald-400 flex items-center justify-center space-x-1
+                                        svg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M5 13l4 4L19 7pathsvg
+                                        span100% 已包含span
+                                    div
+                                div
+                                div class=p-4 bg-gray-90040 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-400 mb-1公司與財務div
+                                    div class=text-sm font-bold text-emerald-400 flex items-center justify-center space-x-1
+                                        svg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M5 13l4 4L19 7pathsvg
+                                        span100% 已包含span
+                                    div
+                                div
+                                div class=p-4 bg-gray-90040 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-400 mb-1市場分析 (BMC)div
+                                    div class=text-sm font-bold text-emerald-400 flex items-center justify-center space-x-1
+                                        svg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M5 13l4 4L19 7pathsvg
+                                        span100% 已包含span
+                                    div
+                                div
+                                div class=p-4 bg-gray-90040 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-400 mb-1資源分析div
+                                    div class=text-sm font-bold text-emerald-400 flex items-center justify-center space-x-1
+                                        svg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M5 13l4 4L19 7pathsvg
+                                        span100% 已包含span
+                                    div
+                                div
+                                div class=p-4 bg-gray-90040 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-400 mb-1成長策略div
+                                    div class=text-sm font-bold text-emerald-400 flex items-center justify-center space-x-1
+                                        svg class=w-4 h-4 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M5 13l4 4L19 7pathsvg
+                                        span100% 已包含span
+                                    div
+                                div
+                            div
+                        div
+                    div
+                `
+            },
+            {
+                title 公司介紹,
+                subtitle Company Introduction,
+                desc 歷史沿革、組織架構與財務策略——多維度解析聯電實力,
+                icon `svg class=w-8 h-8 text-indigo-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4pathsvg`,
+                content `
+                    div class=space-y-12 animate-[fadeIn_0.5s_ease-out]
+                        !-- 總覽 header --
+                        div class=border-b border-gray-800 pb-4
+                            h2 class=text-3xl font-extrabold text-white公司介紹與核心實力h2
+                            p class=text-gray-400 text-sm mt-1聯華電子 (UMC) 為全球領先的半導體晶圓代工廠，專注於提供高品質、高良率的成熟與特殊製程服務。p
+                        div
+
+                        !-- 1. 歷史沿革 (Anchor ID) --
+                        div id=com-history class=scroll-mt-24 p-6 rounded-2xl bg-gray-90030 border border-red-50020 relative overflow-hidden shadow-lg
+                            div class=absolute top-0 left-0 w-1.5 h-full bg-red-500div
+                            div class=flex items-center space-x-2 mb-4
+                                span class=text-[10px] tracking-wider uppercase text-red-400 bg-red-50010 border border-red-50020 px-2 py-0.5 rounded font-bold小標題span
+                                h3 class=text-xl font-bold text-white一、歷史與沿革h3
+                            div
+                            div class=space-y-4 text-sm text-gray-300 leading-relaxed
+                                p聯華電子成立於 strong class=text-white1980 年strong，是台灣第一家上市的半導體公司。在長達四十餘年的半導體浪潮中，歷經數次重大策略轉向，最終奠定成熟與特殊製程的世界級龍頭地位：p
+                                div class=grid grid-cols-1 mdgrid-cols-2 gap-4 mt-2
+                                    div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                        span class=text-indigo-400 font-bold block mb-11980 - 1994 創始與深耕span
+                                        p class=text-xs text-gray-400研發、生產與自有品牌並行。1985 年正式於台灣證券交易所掛牌上市，為台灣半導體產業開路。p
+                                    div
+                                    div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                        span class=text-indigo-400 font-bold block mb-11995 純晶圓代工轉型span
+                                        p class=text-xs text-gray-400毅然決定轉型為「純晶圓代工（Pure-play Foundry）」模式，放棄自有品牌，全心服務 IC 設計客戶。p
+                                    div
+                                    div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                        span class=text-indigo-400 font-bold block mb-11998 全球收購擴產span
+                                        p class=text-xs text-gray-400收購合泰半導體、取得新日鐵半導體等晶圓廠，大舉拓展海外市場，建構全球產能防護網。p
+                                    div
+                                    div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                        span class=text-indigo-400 font-bold block mb-12018 迄今 特殊製程戰略重組span
+                                        p class=text-xs text-gray-400正式宣佈停止研發 12nm 以下尖端高折舊製程，全力衝刺 2228 奈米特殊製程，避開價格紅海，創造超高毛利與良率。p
+                                    div
+                                div
+                            div
+                        div
+
+                        !-- 2. 組織架構與全球佈局 (Anchor ID) --
+                        div id=com-org class=scroll-mt-24 p-6 rounded-2xl bg-gray-90030 border border-red-50020 relative overflow-hidden shadow-lg
+                            div class=absolute top-0 left-0 w-1.5 h-full bg-red-500div
+                            div class=flex items-center space-x-2 mb-4
+                                span class=text-[10px] tracking-wider uppercase text-red-400 bg-red-50010 border border-red-50020 px-2 py-0.5 rounded font-bold小標題span
+                                h3 class=text-xl font-bold text-white二、組織架構與全球佈局h3
+                            div
+
+                            p class=text-sm text-gray-300 mb-6 leading-relaxed
+                                聯電以晶圓代工服務為單一核心，聚焦於成熟與特殊製程，服務全球上游 IC 設計廠商 (TA)。旗下擁有 12 座晶圓廠，分佈於亞洲及美國，提供客戶極具彈性與韌性的供應鏈：
+                            p
+
+                            !-- 工廠佈局網格 --
+                            div class=grid grid-cols-1 mdgrid-cols-3 gap-4
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-indigo-400 font-bold text-sm mb-1台灣總部 (Fab 12A  8系列)div
+                                    p class=text-xs text-gray-400核心研發中心與產能支柱，主攻最先進的成熟製程工藝，研發與特殊客製化製程的首要落腳地。p
+                                div
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-indigo-400 font-bold text-sm mb-1新加坡廠 (Fab 12i  P3)div
+                                    p class=text-xs text-gray-400東南亞晶圓製造與交付核心基地，擴大全球佈局的領頭羊，可滿足大量跨國車用與高頻晶片代工。p
+                                div
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-indigo-400 font-bold text-sm mb-1日本廠 (USJC)  美國 (Intel合作)div
+                                    p class=text-xs text-gray-400深耕日本車載半導體供應鏈；同時與 Intel 於亞利桑那州展開 12nm 輕資產共同研發合作，打造次世代產能韌性。p
+                                div
+                            div
+                        div
+
+                        !-- 3. 財務資訊 (Anchor ID) --
+                        div id=com-finance class=scroll-mt-24 p-6 rounded-2xl bg-gray-90030 border border-red-50020 relative overflow-hidden shadow-lg
+                            div class=absolute top-0 left-0 w-1.5 h-full bg-red-500div
+                            div class=flex items-center space-x-2 mb-4
+                                span class=text-[10px] tracking-wider uppercase text-red-400 bg-red-50010 border border-red-50020 px-2 py-0.5 rounded font-bold小標題span
+                                h3 class=text-xl font-bold text-white三、財務資訊與營收結構h3
+                            div
+
+                            !-- 財務關鍵指標 --
+                            div class=grid grid-cols-2 mdgrid-cols-4 gap-4 mb-6 text-center
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-5002024 年總營收div
+                                    div class=text-lg font-bold text-white mt-12,323 億元div
+                                div
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-5002025 年總營收div
+                                    div class=text-lg font-bold text-indigo-400 mt-12,375 億元div
+                                div
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-500毛利率div
+                                    div class=text-lg font-bold text-emerald-400 mt-1穩定維持 29%+div
+                                div
+                                div class=bg-gray-95040 p-4 rounded-xl border border-gray-800
+                                    div class=text-xs text-gray-500淨利益率div
+                                    div class=text-lg font-bold text-blue-400 mt-118.5% (極其優異)div
+                                div
+                            div
+
+                            div class=grid grid-cols-1 lggrid-cols-2 gap-6
+                                !-- 製程營收比例 --
+                                div class=bg-gray-95020 p-5 rounded-xl border border-gray-80060
+                                    h4 class=font-bold text-white text-sm mb-4製程營收佔比分析h4
+                                    div class=space-y-3 text-xs
+                                        div
+                                            div class=flex justify-between mb-1
+                                                span class=text-gray-3002228 奈米 (核心獲利支柱)span
+                                                span class=text-indigo-400 font-bold37%span
+                                            div
+                                            div class=w-full bg-gray-800 h-1.5 rounded-fulldiv class=bg-indigo-500 h-1.5 rounded-full style=width 37%divdiv
+                                        div
+                                        div
+                                            div class=flex justify-between mb-1
+                                                span class=text-gray-30065 奈米span
+                                                span class=text-gray-40017%span
+                                            div
+                                            div class=w-full bg-gray-800 h-1.5 rounded-fulldiv class=bg-gray-500 h-1.5 rounded-full style=width 17%divdiv
+                                        div
+                                        div
+                                            div class=flex justify-between mb-1
+                                                span class=text-gray-30040 奈米 (主力製程之二)span
+                                                span class=text-blue-400 font-bold16%span
+                                            div
+                                            div class=w-full bg-gray-800 h-1.5 rounded-fulldiv class=bg-blue-500 h-1.5 rounded-full style=width 16%divdiv
+                                        div
+                                    div
+                                    p class=text-[10px] text-gray-500 mt-4 leading-relaxed
+                                        💡 2228奈米與40奈米製程相加佔總營收超過一半。得益於折舊完畢與超高良率，面對陸廠價格競爭依然能夠交出 18.5% 淨利潤率的優秀財務答卷。
+                                    p
+                                div
+
+                                !-- 績效亮點 --
+                                div class=bg-gray-95020 p-5 rounded-xl border border-gray-80060 flex flex-col justify-between
+                                    div
+                                        h4 class=font-bold text-white text-sm mb-3財務與經營亮點h4
+                                        ul class=space-y-2 text-xs text-gray-400
+                                            li class=flex items-startspan class=text-emerald-400 mr-2✔spanspan穩健的 EPS 指標： 2025 年基本每股盈餘達到 3.34 元，產能利用率維持在健康的 78% 左右。spanli
+                                            li class=flex items-startspan class=text-emerald-400 mr-2✔spanspan輕資產避免資本重擔： 與 Intel 合作 12nm 成功避開了上百億美元的建廠開銷，避免承受沉重的設備折舊費用，使資產負債表保持高靈活性。spanli
+                                        ul
+                                    div
+                                    div class=text-[11px] text-indigo-400 font-medium italic pt-4 border-t border-gray-80060 mt-4
+                                        「透過產品組合優化與高良率加持，聯電已建立起不易動搖的財務護城河。」
+                                    div
+                                div
+                            div
+                        div
+                    div
+                `
+            },
+            {
+                title 市場分析,
+                subtitle Market Analysis,
+                desc 半導體產業生命週期、聯電商業模式九宮格與產品定位分析,
+                icon `svg class=w-8 h-8 text-blue-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2zpathsvg`,
+                content `
+                    div class=space-y-8 animate-[fadeIn_0.5s_ease-out]
+                        div class=border-b border-gray-800 pb-4
+                            h2 class=text-3xl font-extrabold text-white半導體市場分析與定位h2
+                            p class=text-gray-400 text-sm mt-1透析聯電如何藉由成熟製程的獨特地位，在激烈的全球代工競爭中另闢藍海。p
+                        div
+
+                        !-- 產業生命週期分析 --
+                        div class=glass-card p-6 rounded-2xl
+                            h3 class=text-lg font-bold text-white mb-2成熟製程之產業生命週期：成熟期h3
+                            div class=relative h-12 bg-gray-900 rounded-lg overflow-hidden flex items-center mb-4
+                                div class=w-14 h-full bg-blue-90040 flex items-center justify-center border-r border-gray-800 text-xs text-gray-500導入期div
+                                div class=w-14 h-full bg-blue-80040 flex items-center justify-center border-r border-gray-800 text-xs text-gray-400成長期div
+                                div class=w-14 h-full bg-emerald-50020 flex items-center justify-center border-r border-blue-50050 text-xs text-emerald-400 font-bold成熟期 (聯電定位)div
+                                div class=w-14 h-full bg-gray-950 flex items-center justify-center text-xs text-gray-600衰退期div
+                                !-- 定位指標針 --
+                                div class=absolute left-[62%] top-0 bottom-0 w-1 bg-emerald-400 shadow-mddiv
+                            div
+                            div class=grid grid-cols-1 mdgrid-cols-3 gap-4 text-sm text-gray-400
+                                div
+                                    h4 class=font-bold text-white mb-1⚙️ 市場特性h4
+                                    p class=text-xs製程技術完全成熟，標準化程度高，良率已達到極致穩定，是電子終端產品中用量最廣泛的基石。p
+                                div
+                                div
+                                    h4 class=font-bold text-white mb-1💰 成本與折舊h4
+                                    p class=text-xs聯電的早期成熟製程設備大多已折舊完畢，因而能以極低的邊際成本進行生產，建立極強的價格防線。p
+                                div
+                                div
+                                    h4 class=font-bold text-white mb-1⚠️ 替代性威脅h4
+                                    p class=text-xs雖然尖端智慧型手機主打3nm製程，但其所需的電源管理晶片、射頻晶片等仍高度依賴28nm等成熟與特殊工藝。p
+                                div
+                            div
+                        div
+
+                        !-- 商業模式九宮格 (BMC) --
+                        div
+                            h3 class=text-lg font-bold text-white mb-4聯華電子商業模式九宮格 (Business Model Canvas)h3
+                            div class=grid grid-cols-1 mdgrid-cols-5 gap-3 text-xs
+                                
+                                div class=glass-card p-4 rounded-xl flex flex-col justify-between h-44
+                                    div
+                                        div class=font-bold text-blue-400 mb-1.5🤝 關鍵合作夥伴 (KP)div
+                                        p class=text-gray-400 leading-relaxedEDA軟體開發商、封測代工廠 (ASE)、IC設計大廠、長期產能承諾協約 (LTA) 客戶、Intel (12nm技術共同開發)。p
+                                    div
+                                div
+
+                                div class=flex flex-col space-y-3 mdcol-span-1 h-44
+                                    div class=glass-card p-4 rounded-xl flex-1 flex flex-col justify-between
+                                        div
+                                            div class=font-bold text-blue-400 mb-1⚡ 關鍵活動 (KA)div
+                                            p class=text-gray-400晶圓代工製造、特殊製程工藝開發 (BCD, RFSOI)、多項目晶圓 (MPW) 服務。p
+                                        div
+                                    div
+                                    div class=glass-card p-4 rounded-xl flex-1 flex flex-col justify-between
+                                        div
+                                            div class=font-bold text-blue-400 mb-1🎒 核心資源 (KR)div
+                                            p class=text-gray-40012座全球成熟製程晶圓廠、智財權庫 (IP)、高效率生產管理團隊。p
+                                        div
+                                    div
+                                div
+
+                                div class=glass-card p-4 rounded-xl flex flex-col justify-between h-44
+                                    div
+                                        div class=font-bold text-blue-400 mb-1.5💎 價值主張 (VP)div
+                                        p class=text-gray-400 leading-relaxed高良率且極具成本優勢的 mature-node 代工。提供 RF、車載、嵌入式記憶體等全方位一站式特殊工藝平台，以及多元且具備韌性的全球供應鏈。p
+                                    div
+                                div
+
+                                div class=flex flex-col space-y-3 mdcol-span-1 h-44
+                                    div class=glass-card p-4 rounded-xl flex-1 flex flex-col justify-between
+                                        div
+                                            div class=font-bold text-blue-400 mb-1❤️ 客戶關係 (CR)div
+                                            p class=text-gray-400長期產能協議 (LTA) 深度綁定關係，共同研發專案。p
+                                        div
+                                    div
+                                    div class=glass-card p-4 rounded-xl flex-1 flex flex-col justify-between
+                                        div
+                                            div class=font-bold text-blue-400 mb-1🌐 通路管道 (CH)div
+                                            p class=text-gray-400全球銷售據點、與 IC 設計服務業者合作。p
+                                        div
+                                    div
+                                div
+
+                                div class=glass-card p-4 rounded-xl flex flex-col justify-between h-44
+                                    div
+                                        div class=font-bold text-blue-400 mb-1.5🎯 客戶細分 (CS)div
+                                        p class=text-gray-400 leading-relaxed追求高性價比、高度客製化特殊晶片、需要車用射頻等高穩定性晶片的上游 IC 設計廠商 (Fabless)。p
+                                    div
+                                div
+
+                            div
+                            div class=grid grid-cols-1 mdgrid-cols-2 gap-3 mt-3 text-xs
+                                div class=glass-card p-4 rounded-xl
+                                    div class=font-bold text-blue-400 mb-1💵 成本結構 (CS)div
+                                    p class=text-gray-400研發支出、晶圓廠折舊费用、材料採購（矽片及化學品）、全球廠房營運能耗。p
+                                div
+                                div class=glass-card p-4 rounded-xl
+                                    div class=font-bold text-blue-400 mb-1💰 收入來源 (RS)div
+                                    p class=text-gray-400晶圓代工銷售（2228奈米與40奈米為大宗）、特許技術與 IP 授權費、光罩製作與共同測試服務費。p
+                                div
+                            div
+                        div
+                    div
+                `
+            },
+            {
+                title 資源分析,
+                subtitle Resource Analysis,
+                desc 聯電特殊製程與技術的核心競爭力與資源評價（VRIO 框架模型）,
+                icon `svg class=w-8 h-8 text-emerald-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622pathsvg`,
+                content `
+                    div class=space-y-8 animate-[fadeIn_0.5s_ease-out]
+                        div class=border-b border-gray-800 pb-4
+                            h2 class=text-3xl font-extrabold text-whiteVRIO 資源評價模型h2
+                            p class=text-gray-400 text-sm mt-1使用國際策略管理中最經典的 VRIO 工具，全面性地評估聯電核心資源之競爭優勢定位。p
+                        div
+
+                        !-- VRIO 評估矩陣 --
+                        div class=overflow-x-auto
+                            table class=w-full text-left text-sm text-gray-300 border-collapse
+                                thead
+                                    tr class=border-b border-gray-800 bg-gray-90050
+                                        th class=p-4 font-bold text-white w-14分析資源 or 能力th
+                                        th class=p-4 font-bold text-blue-400 text-centerV (價值性)th
+                                        th class=p-4 font-bold text-blue-400 text-centerR (稀少性)th
+                                        th class=p-4 font-bold text-blue-400 text-centerI (難以模仿)th
+                                        th class=p-4 font-bold text-blue-400 text-centerO (組織配合)th
+                                        th class=p-4 font-bold text-emerald-400 text-right競爭優勢結論th
+                                    tr
+                                thead
+                                tbody class=divide-y divide-gray-80050
+                                    !-- 資源 1 --
+                                    tr class=hoverbg-gray-90020
+                                        td class=p-4 font-semibold text-white2228奈米成熟製程之超高良率與產能規模td
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-red-500 font-bold✘ Notd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-right text-indigo-400 font-semibold暫時性競爭優勢brspan class=text-xs text-gray-500（受陸廠擴產威脅）spantd
+                                    tr
+                                    !-- 資源 2 --
+                                    tr class=hoverbg-gray-90020
+                                        td class=p-4 font-semibold text-white特殊製程技術平台brspan class=text-xs text-gray-500(HV 高壓RFSOI 射頻BCD 混合)spantd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-right text-emerald-400 font-black持續性競爭優勢brspan class=text-xs text-emerald-500（極高進入障礙）spantd
+                                    tr
+                                    !-- 資源 3 --
+                                    tr class=hoverbg-gray-90020
+                                        td class=p-4 font-semibold text-white與英特爾(Intel) 亞利桑那州 12nm 產能與技術合作td
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-right text-emerald-400 font-black持續性競爭優勢brspan class=text-xs text-emerald-500（創新跨國輕資產合作）spantd
+                                    tr
+                                    !-- 資源 4 --
+                                    tr class=hoverbg-gray-90020
+                                        td class=p-4 font-semibold text-white3D IC 與矽光子 (CPO) 前瞻封裝技術儲備td
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-center text-red-500 font-bold✘ Notd
+                                        td class=p-4 text-center text-red-500 font-bold✘ Notd
+                                        td class=p-4 text-center text-emerald-400 font-bold✔ Yestd
+                                        td class=p-4 text-right text-gray-400競爭等勢  均勢brspan class=text-xs text-gray-500（追趕市場前段班）spantd
+                                    tr
+                                tbody
+                            table
+                        div
+
+                        !-- VRIO 關鍵發現與洞察 --
+                        div class=glass-card p-6 rounded-2xl
+                            h3 class=text-lg font-bold text-white mb-3💡 G10 團隊深度 VRIO 策略洞察：h3
+                            ul class=space-y-3.5 text-sm text-gray-300
+                                li class=flex items-start
+                                    span class=text-emerald-400 mr-2📌span
+                                    span特殊工藝的護城河： 聯電在射頻元件（RFSOI）與混合高壓（BCD）等製程，需耗費數十年的研發良率積累與客戶互信基礎。這種「持續性競爭優勢」是低價陸廠在短期內絕對無法靠價格戰模仿或取代的。span
+                                li
+                                li class=flex items-start
+                                    span class=text-emerald-400 mr-2📌span
+                                    span輕資產合作之高價值： 與 Intel 的 12 奈米合作成功避開了百億美元建廠與設備折舊費用。藉由 Intel Ocotillo 技術製造基地 的產能配合，聯電獲取了全球多元且強韌的產能鏈布局，建立起專屬於其組織整合能力（O）之下的持續競爭優勢。span
+                                li
+                            ul
+                        div
+                    div
+                `
+            },
+            {
+                title 成長策略,
+                subtitle Growth Strategy,
+                desc 與 Intel 合作 12nm、矽光子布局、先進封裝及地緣政治避險策略,
+                icon `svg class=w-8 h-8 text-amber-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M13 7h8m0 0v8m0-8l-8 8-4-4-6 6pathsvg`,
+                content `
+                    div class=space-y-8 animate-[fadeIn_0.5s_ease-out]
+                        div class=border-b border-gray-800 pb-4
+                            h2 class=text-3xl font-extrabold text-white未來成長策略規劃h2
+                            p class=text-gray-400 text-sm mt-1針對成熟製程大宗商品化威脅，聯電部署三大成長軸線（Intel合作、前瞻技術、一站式封裝）。p
+                        div
+
+                        !-- 三大成長支柱 --
+                        div class=grid grid-cols-1 mdgrid-cols-3 gap-6
+                            
+                            !-- 支柱 1 --
+                            div class=glass-card p-6 rounded-2xl flex flex-col justify-between
+                                div
+                                    div class=text-xs text-blue-400 font-bold tracking-widest mb-2 uppercasePILLAR 01div
+                                    h3 class=text-xl font-bold text-white mb-3與 Intel 深度跨國合作 12nmh3
+                                    p class=text-sm text-gray-400 leading-relaxed mb-4
+                                        結合聯電豐富的代工知識與 Intel 亞利桑那州工廠的 FinFET 生產能力，預計 2027 年正式啟動量產。
+                                    p
+                                div
+                                div class=bg-blue-95040 p-3 rounded-lg border border-blue-90050 text-xs text-blue-300
+                                    🎯 核心成效：規避大筆建廠資本風險與財政折舊，並提供在美生產的韌性供應鏈。
+                                div
+                            div
+
+                            !-- 支柱 2 --
+                            div class=glass-card p-6 rounded-2xl flex flex-col justify-between
+                                div
+                                    div class=text-xs text-purple-400 font-bold tracking-widest mb-2 uppercasePILLAR 02div
+                                    h3 class=text-xl font-bold text-white mb-3矽光子 (CPO) 下世代互連技術h3
+                                    p class=text-sm text-gray-400 leading-relaxed mb-4
+                                        與 ime iSiPP300 製程簽約，強勢切入下世代 AI 伺服器高速連接應用，以光取代銅進行高效率資料傳輸。
+                                    p
+                                div
+                                div class=bg-purple-95040 p-3 rounded-lg border border-purple-90050 text-xs text-purple-300
+                                    🎯 核心成效：提供大幅降低延遲、提升頻寬並提高能源效率的 12 吋矽光子平台。
+                                div
+                            div
+
+                            !-- 支柱 3 --
+                            div class=glass-card p-6 rounded-2xl flex flex-col justify-between
+                                div
+                                    div class=text-xs text-emerald-400 font-bold tracking-widest mb-2 uppercasePILLAR 03div
+                                    h3 class=text-xl font-bold text-white mb-33D IC 與一站式先進封裝h3
+                                    p class=text-sm text-gray-400 leading-relaxed mb-4
+                                        積極開發 W2W 3D IC 專案，利用矽堆疊技術，完美整合記憶體與處理器，提供一站式封裝服務。
+                                    p
+                                div
+                                div class=bg-emerald-95040 p-3 rounded-lg border border-emerald-90050 text-xs text-emerald-300
+                                    🎯 核心成效：提供高度整合平台，大幅提升客戶轉單成本與其系統級晶片性價比。
+                                div
+                            div
+
+                        div
+
+                        !-- 長期營收與產品群防護 --
+                        div class=glass-card p-6 rounded-2xl
+                            h3 class=text-lg font-bold text-white mb-3策略防線：長期產能協議 (LTA)h3
+                            p class=text-sm text-gray-300 leading-relaxed
+                                為了避免單向接單的產能波動風險，聯電目前與多個全球頂尖 IC 設計廠商簽訂 長期產能協議 (LTA)。透過鎖定基本產能與保障價格，即便在半導體市場處於價格戰之際，聯電仍能維持高度穩定的產能利用率（維持在 75-80% 區間）與健康的獲利能力，保障未來的策略執行力。
+                            p
+                        div
+                    div
+                `
+            },
+            {
+                title 團隊反思,
+                subtitle Team Reflection,
+                desc G10 團隊在個案研討中的學習心得、合作歷程與 AI 輔助反思,
+                icon `svg class=w-8 h-8 text-pink-400 fill=none stroke=currentColor viewBox=0 0 24 24path stroke-linecap=round stroke-linejoin=round stroke-width=2 d=M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8zpathsvg`,
+                content `
+                    div class=space-y-8 animate-[fadeIn_0.5s_ease-out]
+                        div class=border-b border-gray-800 pb-4
+                            h2 class=text-3xl font-extrabold text-white團隊合作歷程與策略反思h2
+                            p class=text-gray-400 text-sm mt-1對應競賽中「團隊合作與反思 25%」指標，我們整理了此專案的研究歷程、所學所得與突破。p
+                        div
+
+                        div class=grid grid-cols-1 lggrid-cols-2 gap-6
+                            !-- 合作歷程時間軸 --
+                            div class=glass-card p-6 rounded-2xl
+                                h3 class=text-lg font-bold text-white mb-4專案推進歷程時間軸h3
+                                div class=space-y-4 text-xs
+                                    div class=flex space-x-3
+                                        div class=w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0div
+                                        div
+                                            div class=text-gray-400第一階段：目標選定與商業模式建立div
+                                            p class=text-gray-300 mt-1選定聯電為分析主體，盤點其 2025 年營收結構，繪製其成熟製程之商業模式九宮格（BMC）。p
+                                        div
+                                    div
+                                    div class=flex space-x-3
+                                        div class=w-2 h-2 rounded-full bg-indigo-500 mt-1.5 flex-shrink-0div
+                                        div
+                                            div class=text-gray-400第二階段：組織架構、功能部門與資源評價div
+                                            p class=text-gray-300 mt-1深度解讀聯電 12 座全球工廠，並應用 VRIO 框架評價其特殊製程與技術，抓取核心持續競爭優勢。p
+                                        div
+                                    div
+                                    div class=flex space-x-3
+                                        div class=w-2 h-2 rounded-full bg-purple-500 mt-1.5 flex-shrink-0div
+                                        div
+                                            div class=text-gray-400第三階段：前瞻策略規劃 (CPO 與 Intel 12nm)div
+                                            p class=text-gray-300 mt-1分析聯電在「避開尖端、深耕特殊」策略下的前瞻矽光子平台佈局與與英特爾之新型美中產能合作細節。p
+                                        div
+                                    div
+                                    div class=flex space-x-3
+                                        div class=w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0div
+                                        div
+                                            div class=text-gray-400第四階段：數位網頁建構與展示div
+                                            p class=text-gray-300 mt-1使用手繪草圖搭建極具創意的輪播互動式 Landing Page，提高使用者體驗，成功與學科知識相結合。p
+                                        div
+                                    div
+                                div
+                            div
+
+                            !-- 反思與 AI 工具應用 --
+                            div class=glass-card p-6 rounded-2xl flex flex-col justify-between
+                                div
+                                    h3 class=text-lg font-bold text-white mb-3AI 協同工作模式與反思h3
+                                    p class=text-sm text-gray-300 leading-relaxed mb-4
+                                        在本次競賽準備中，我們積極使用 AI 作為專案研究的共創夥伴：
+                                    p
+                                    div class=space-y-2 text-xs text-gray-400
+                                        div class=p-2.5 bg-gray-90060 rounded-lg border border-gray-800
+                                            🚀 大數據分析加速：利用 AI 全文閱讀功能，迅速從數十頁的財務與產業報告中，交叉萃取出 2228 奈米占 36% 營收的數據。
+                                        div
+                                        div class=p-2.5 bg-gray-90060 rounded-lg border border-gray-800
+                                            🎨 UI 創意轉化：在沒有程式背景基礎下，團隊與 AI 協同工作，透過自然的對話，將我們的手繪草圖完美轉化為流暢的程式碼。
+                                        div
+                                    div
+                                div
+                                div class=pt-4 border-t border-gray-800 text-[11px] text-gray-500 font-medium italic
+                                    「這不僅僅是一份報告，更是一次將策略管理模型、地緣政治、前瞻半導體科技，以及人機協作完美落地的深刻學習體驗。」
+                                div
+                            div
+                        div
+                    div
+                `
+            }
+        ];
+
+         2. 當前選取的卡片索引
+        let activeIndex = 1;  預設停在「公司介紹」
+
+         3. 初次渲染卡片框架（只執行一次，保證 transition 效果持續存在不中斷）
+        function initCarousel() {
+            const track = document.getElementById('carousel-track');
+            track.innerHTML = '';
+
+            SECTIONS.forEach((item, index) = {
+                const cardHtml = `
+                    div id=carousel-item-${index} onclick=setActiveIndex(${index}) class=carousel-item absolute w-[280px] mdw-[350px] p-6 rounded-2xl glass-panel text-center cursor-pointer flex flex-col justify-center items-center h-[220px]
+                        div class=flex justify-center mb-4
+                            div class=p-4 bg-blue-50010 rounded-full text-blue-400
+                                ${item.icon}
+                            div
+                        div
+                        div
+                            span class=text-xs tracking-wider uppercase text-blue-500 font-semibold mb-2 block${item.subtitle}span
+                            h3 class=text-3xl font-black text-white${item.title}h3
+                        div
+                    div
+                `;
+                track.innerHTML += cardHtml;
+            });
+
+             初始化卡片樣式分佈
+            updateCarousel();
+        }
+
+         4. 動態更新卡片的樣式（CSS 3D 旋轉、滾動與放大縮小）
+        function updateCarousel() {
+            SECTIONS.forEach((item, index) = {
+                const card = document.getElementById(`carousel-item-${index}`);
+                if (!card) return;
+
+                let diff = index - activeIndex;
+                const total = SECTIONS.length;
+
+                 核心環形算法：處理過渡到首尾時的卡片流暢翻轉
+                if (diff  -total  2) {
+                    diff += total;
+                } else if (diff  total  2) {
+                    diff -= total;
+                }
+
+                let transformStyle = '';
+                let opacity = 0;
+                let zIndex = 0;
+                let pointerEvents = 'none';
+
+                if (diff === 0) {
+                     中間核心卡片：轉正、前推 + 放大 1.15x
+                    transformStyle = 'translateX(0) scale(1.15) translateZ(80px) rotateY(0deg)';
+                    opacity = 1;
+                    zIndex = 20;
+                    pointerEvents = 'auto';
+                    card.style.borderColor = 'rgba(59, 130, 246, 0.5)';  中間藍框高亮
+                    card.style.boxShadow = '0 15px 35px -10px rgba(59, 130, 246, 0.4)';
+                } else if (diff === -1) {
+                     左側鄰近卡片：偏左、縮小 + 向右旋轉 35 度，展現 3D 厚度
+                    transformStyle = 'translateX(-110%) scale(0.8) translateZ(-50px) rotateY(35deg)';
+                    opacity = 0.5;
+                    zIndex = 10;
+                    pointerEvents = 'auto';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    card.style.boxShadow = 'none';
+                } else if (diff === 1) {
+                     右側鄰近卡片：偏右、縮小 + 向左旋轉 35 度，展現 3D 厚度
+                    transformStyle = 'translateX(110%) scale(0.8) translateZ(-50px) rotateY(-35deg)';
+                    opacity = 0.5;
+                    zIndex = 10;
+                    pointerEvents = 'auto';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    card.style.boxShadow = 'none';
+                } else {
+                     遠端其他卡片：隱藏在背景中並轉為大角度
+                    transformStyle = diff  0 
+                         'translateX(-220%) scale(0.6) translateZ(-150px) rotateY(55deg)' 
+                         'translateX(220%) scale(0.6) translateZ(-150px) rotateY(-55deg)';
+                    opacity = 0;
+                    zIndex = 0;
+                    pointerEvents = 'none';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                    card.style.boxShadow = 'none';
+                }
+
+                 寫入 CSS 觸發過渡動畫
+                card.style.transform = transformStyle;
+                card.style.opacity = opacity;
+                card.style.zIndex = zIndex;
+                card.style.pointerEvents = pointerEvents;
+            });
+        }
+
+         5. 切換到特定索引
+        function setActiveIndex(index) {
+            if (index  0) {
+                activeIndex = SECTIONS.length - 1;
+            } else if (index = SECTIONS.length) {
+                activeIndex = 0;
+            } else {
+                activeIndex = index;
+            }
+            updateCarousel();
+        }
+
+         6. 前後切換
+        function prevSlide() {
+            setActiveIndex(activeIndex - 1);
+        }
+
+        function nextSlide() {
+            setActiveIndex(activeIndex + 1);
+        }
+
+         7. 長按連續切換功能 (Long-press continuous switching)
+        let holdInterval;
+        let holdTimeout;
+
+        function startHold(direction) {
+             第一次點擊立即觸發
+            if (direction === 'next') nextSlide();
+            else prevSlide();
+
+             按住 400ms 後開始進入連續觸發狀態
+            holdTimeout = setTimeout(() = {
+                holdInterval = setInterval(() = {
+                    if (direction === 'next') nextSlide();
+                    else prevSlide();
+                }, 400);  連續切換的間隔速度 (毫秒)
+            }, 400);
+        }
+
+        function stopHold() {
+            clearTimeout(holdTimeout);
+            clearInterval(holdInterval);
+        }
+
+         8. 側邊選單開關控制器
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isOpen = !sidebar.classList.contains('-translate-x-full');
+            
+            if (isOpen) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() = overlay.classList.add('hidden'), 300);
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() = overlay.classList.remove('opacity-0'), 10);
+                sidebar.classList.remove('-translate-x-full');
+            }
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() = overlay.classList.add('hidden'), 300);
+        }
+
+         9. 統一跳轉控制（支援跳轉指定子頁面與特定錨點小標題）
+        function jumpToSection(index, elementId = null) {
+            activeIndex = index;
+            updateCarousel();
+            
+             進入目標頁面
+            enterCurrentSection();
+            closeSidebar();
+
+             如果有特定錨點，等待渲染完成後平滑滾動至對應段落
+            if (elementId) {
+                setTimeout(() = {
+                    const targetEl = document.getElementById(elementId);
+                    if (targetEl) {
+                        targetEl.scrollIntoView({ behavior 'smooth', block 'start' });
+                    }
+                }, 350);  配合翻頁 3D 動畫完結後再滾動
+            }
+        }
+
+         10. 滑鼠滾輪切換卡片 (Scroll to switch)
+        let scrollTimeout = null;
+        window.addEventListener('wheel', function(event) {
+            const isContentOpen = !document.getElementById('content-container').classList.contains('hidden');
+            if (isContentOpen) return;  如果已經進入內容頁面，滾輪應正常上下滑動，不觸發卡片切換
+
+             實作防抖(Throttle)，避免滾輪一次觸發太多次
+            if (scrollTimeout) return;
+            
+            if (event.deltaY  0) {
+                nextSlide();  向下滾，換下一張
+            } else if (event.deltaY  0) {
+                prevSlide();  向上滾，換上一張
+            }
+
+            scrollTimeout = setTimeout(() = {
+                scrollTimeout = null;
+            }, 600);  鎖定 600ms 內只能切換一次
+        });
+
+         11. 鍵盤事件與 iframe 焦點自動鎖定
+        window.addEventListener('keydown', function(event) {
+            const isContentOpen = !document.getElementById('content-container').classList.contains('hidden');
+            
+            if (isContentOpen) {
+                if (event.key === ArrowLeft) {
+                    switchContentSection(-1);
+                } else if (event.key === ArrowRight) {
+                    switchContentSection(1);
+                } else if (event.key === Escape) {
+                    goToHome();
+                }
+            } else {
+                if (event.key === ArrowLeft) {
+                    prevSlide();
+                } else if (event.key === ArrowRight) {
+                    nextSlide();
+                } else if (event.key === Enter) {
+                    enterCurrentSection();
+                }
+            }
+        });
+
+         確保任何地方被點擊時，預覽視窗都能自動獲取鍵盤焦點
+        document.body.addEventListener('click', () = {
+            window.focus();
+        });
+
+         12. 進入當前主題詳細頁面
+        function enterCurrentSection() {
+            const item = SECTIONS[activeIndex];
+            
+             填入標題與章節索引
+            document.getElementById('current-section-title').innerText = item.title;
+            document.getElementById('current-section-index').innerText = `${activeIndex + 1}  ${SECTIONS.length}`;
+            
+             渲染內容
+            document.getElementById('content-display-box').innerHTML = item.content;
+
+             觸發翻頁 3D 入場特效
+            const landing = document.getElementById('landing-page');
+            const content = document.getElementById('content-container');
+
+            landing.style.transform = 'scale(0.9) translateZ(-100px)';
+            landing.style.opacity = '0';
+            
+            setTimeout(() = {
+                landing.classList.add('hidden');
+                content.classList.remove('hidden');
+                content.scrollTop = 0;  置頂
+            }, 300);
+        }
+
+         13. 橫向子頁面切換 (進入詳細頁面後的快捷導覽)
+        function switchContentSection(direction) {
+            let nextIdx = activeIndex + direction;
+            if (nextIdx  0) nextIdx = SECTIONS.length - 1;
+            if (nextIdx = SECTIONS.length) nextIdx = 0;
+            
+            activeIndex = nextIdx;
+            
+             更新首頁輪播狀態（以便返回時位置正確）
+            updateCarousel();
+            
+             更新內容視窗
+            const item = SECTIONS[activeIndex];
+            document.getElementById('current-section-title').innerText = item.title;
+            document.getElementById('current-section-index').innerText = `${activeIndex + 1}  ${SECTIONS.length}`;
+            
+             加點淡入動畫效果
+            const displayBox = document.getElementById('content-display-box');
+            displayBox.style.opacity = '0';
+            setTimeout(() = {
+                displayBox.innerHTML = item.content;
+                displayBox.style.opacity = '1';
+                document.getElementById('content-container').scrollTop = 0;  置頂
+            }, 150);
+        }
+
+         14. 回到首頁大廳
+        function goToHome() {
+            const landing = document.getElementById('landing-page');
+            const content = document.getElementById('content-container');
+
+            content.classList.add('hidden');
+            landing.classList.remove('hidden');
+            
+             動態恢復首頁位置與透明度
+            setTimeout(() = {
+                landing.style.transform = 'scale(1) translateZ(0)';
+                landing.style.opacity = '1';
+                updateCarousel();
+            }, 50);
+        }
+
+         啟動初始化
+        window.onload = function() {
+            initCarousel();
+             自動聚焦，點開即啟用鍵盤控制
+            window.focus();
+        };
+    script
+body
+html
