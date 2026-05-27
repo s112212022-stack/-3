@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>聯華電子 - 國際策略管理期末專案</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans TC', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* 玻璃擬物化特效 */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(31, 41, 55, 0.4);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover {
+            background: rgba(31, 41, 55, 0.6);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(59, 130, 246, 0.3);
+        }
+        .wafer-bg {
+            background: radial-gradient(circle at 50% 50%, rgba(17, 24, 39, 0.6) 0%, rgba(11, 15, 25, 1) 100%);
+        }
+        .carousel-container {
+            perspective: 1200px;
+            transform-style: preserve-3d;
+        }
+        .carousel-item {
+            transition: transform 0.7s cubic-bezier(0.25, 0.8, 0.25, 1), opacity 0.7s ease, border-color 0.4s ease;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+        }
+        .page-transition {
+            transition: transform 0.6s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.6s ease;
+        }
+        
+        /* 強制展開用樣式 (Click event override) */
+        .force-open { max-height: 500px !important; }
+        .force-rotate { transform: rotate(180deg) !important; }
+    </style>
+</head>
+<!-- 關鍵修改：使用 h-[100dvh] 確保完美適配螢幕高度，並設定 overflow-hidden 防止首頁滾動 -->
+<body class="wafer-bg h-[100dvh] w-screen flex flex-col justify-between overflow-hidden">
+
+    <!-- 靜態科技背景線條 -->
+    <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-10">
+        <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+                    <path d="M 60 0 L 0 0 0 60" fill="none" stroke="rgba(255, 255, 255, 0.15)" stroke-width="1"/>
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+            <circle cx="50%" cy="50%" r="35%" fill="none" stroke="rgba(59, 130, 246, 0.2)" stroke-width="2" stroke-dasharray="10, 15" />
+            <circle cx="50%" cy="50%" r="20%" fill="none" stroke="rgba(59, 130, 246, 0.1)" stroke-width="1" />
+        </svg>
+    </div>
+
+    <!-- 頁頂導覽列 (加入 shrink-0 防止被擠壓) -->
+    <header class="relative z-30 w-full px-4 lg:px-16 py-3 flex items-center justify-between border-b border-gray-800/50 glass-panel shrink-0">
+        <div class="flex items-center space-x-3 md:space-x-4">
+            <button onclick="toggleSidebar()" class="p-2 text-gray-400 hover:text-white hover:bg-gray-800/60 rounded-xl transition-all focus:outline-none flex items-center justify-center border border-gray-800 hover:border-gray-700">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <div class="flex items-center space-x-2 md:space-x-3 cursor-pointer" onclick="goToHome()">
+                <div class="w-8 h-8 md:w-9 md:h-9 bg-white rounded-md flex items-center justify-center p-1 shadow-lg shadow-blue-500/20">
+                    <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                        <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="#0033a0">UMC</text>
+                    </svg>
+                </div>
+                <span class="text-base md:text-lg font-bold tracking-wider text-white">聯華電子</span>
+            </div>
+        </div>
+        
+        <div class="flex items-center space-x-1 md:space-x-3">
+            <button class="p-1.5 md:p-2 text-gray-400 hover:text-white hover:bg-gray-800/60 rounded-xl transition-all focus:outline-none border border-transparent hover:border-gray-700" title="語音導覽">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5 10v4a2 2 0 002 2h2l4 4V4L9 8H7a2 2 0 00-2 2z"></path></svg>
+            </button>
+            <button class="p-1.5 md:p-2 text-gray-400 hover:text-white hover:bg-gray-800/60 rounded-xl transition-all focus:outline-none border border-transparent hover:border-gray-700" title="明暗模式">
+                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+            </button>
+            <button class="px-2 py-1 md:px-3 md:py-1.5 text-[10px] md:text-xs font-bold text-gray-400 hover:text-white hover:bg-gray-800/60 rounded-xl transition-all focus:outline-none border border-transparent hover:border-gray-700 tracking-wider" title="Language">
+                中/EN
+            </button>
+        </div>
+    </header>
+
+    <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 hidden transition-opacity duration-300 opacity-0"></div>
+
+    <!-- 側邊選單 -->
+    <div id="sidebar" class="fixed top-0 left-0 h-full w-80 bg-[#090d16]/98 border-r border-gray-800/80 z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col justify-between shadow-2xl shadow-black/80">
+        <div class="p-6 overflow-y-auto no-scrollbar flex-1">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-5 mb-6">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-white rounded-md flex items-center justify-center p-0.5 shadow-sm">
+                        <svg viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            <text x="50%" y="55%" dominant-baseline="middle" text-anchor="middle" font-family="Arial, sans-serif" font-weight="900" font-size="28" fill="#0033a0">UMC</text>
+                        </svg>
+                    </div>
+                    <span class="text-base font-bold tracking-wider text-white">導覽選單</span>
+                </div>
+                <button onclick="toggleSidebar()" class="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <nav class="space-y-2">
+                <!-- 1. 組員介紹 -->
+                <button onclick="jumpToSection(0)" class="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-800/40 text-gray-300 hover:text-white font-medium transition-all text-left">
+                    <svg class="w-5 h-5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span>組員介紹</span>
+                </button>
+
+                <!-- 2. 公司介紹 (Hover + Click) -->
+                <div class="space-y-1 relative" onmouseenter="handleHover(true, 'com')" onmouseleave="handleHover(false, 'com')">
+                    <button onclick="toggleMenu('com')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-gray-800/40 text-gray-300 hover:text-white font-medium transition-all text-left">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-indigo-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1M9 11h1"></path></svg>
+                            <span class="font-bold">公司介紹</span>
+                        </div>
+                        <svg id="chevron-com" class="w-4 h-4 text-gray-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="submenu-com" class="overflow-hidden transition-all duration-500 max-h-0">
+                        <div class="pl-12 pr-4 py-1 space-y-1.5 border-l-2 border-indigo-500/50 ml-6 mb-2">
+                            <button onclick="jumpToSection(1, 'com-overview')" class="flex items-center text-xs text-gray-400 hover:text-indigo-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 shrink-0"></span>公司概況
+                            </button>
+                            <button onclick="jumpToSection(1, 'com-history')" class="flex items-center text-xs text-gray-400 hover:text-indigo-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 shrink-0"></span>歷史沿革
+                            </button>
+                            <button onclick="jumpToSection(1, 'com-locations')" class="flex items-center text-xs text-gray-400 hover:text-indigo-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 shrink-0"></span>服務據點
+                            </button>
+                            <button onclick="jumpToSection(1, 'com-org')" class="flex items-center text-xs text-gray-400 hover:text-indigo-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 shrink-0"></span>組織架構
+                            </button>
+                            <button onclick="jumpToSection(1, 'com-finance')" class="flex items-center text-xs text-gray-400 hover:text-indigo-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 mr-2 shrink-0"></span>財務績效
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. 市場分析 (Hover + Click) -->
+                <div class="space-y-1 relative" onmouseenter="handleHover(true, 'market')" onmouseleave="handleHover(false, 'market')">
+                    <button onclick="toggleMenu('market')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-gray-800/40 text-gray-300 hover:text-white font-medium transition-all text-left">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-purple-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>
+                            <span class="font-bold">市場分析</span>
+                        </div>
+                        <svg id="chevron-market" class="w-4 h-4 text-gray-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="submenu-market" class="overflow-hidden transition-all duration-500 max-h-0">
+                        <div class="pl-12 pr-4 py-1 space-y-1.5 border-l-2 border-purple-500/50 ml-6 mb-2">
+                            <button onclick="jumpToSection(2, 'market-bmc')" class="flex items-center text-xs text-gray-400 hover:text-purple-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 shrink-0"></span>商業模式九宮格
+                            </button>
+                            <button onclick="jumpToSection(2, 'market-trend')" class="flex items-center text-xs text-gray-400 hover:text-purple-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 shrink-0"></span>產業環境與市場趨勢
+                            </button>
+                            <button onclick="jumpToSection(2, 'market-competitor')" class="flex items-center text-xs text-gray-400 hover:text-purple-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 shrink-0"></span>策略群組-競爭者分析
+                            </button>
+                            <button onclick="jumpToSection(2, 'market-dynamic')" class="flex items-center text-xs text-gray-400 hover:text-purple-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 shrink-0"></span>動態競爭分析
+                            </button>
+                            <button onclick="jumpToSection(2, 'market-pestel')" class="flex items-center text-xs text-gray-400 hover:text-purple-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 shrink-0"></span>PESTEL
+                            </button>
+                            <button onclick="jumpToSection(2, 'market-six-forces')" class="flex items-center text-xs text-gray-400 hover:text-purple-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500 mr-2 shrink-0"></span>六力分析
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. 資源分析 (Hover + Click) -->
+                <div class="space-y-1 relative" onmouseenter="handleHover(true, 'resource')" onmouseleave="handleHover(false, 'resource')">
+                    <button onclick="toggleMenu('resource')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-gray-800/40 text-gray-300 hover:text-white font-medium transition-all text-left">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622"></path></svg>
+                            <span class="font-bold">資源分析</span>
+                        </div>
+                        <svg id="chevron-resource" class="w-4 h-4 text-gray-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="submenu-resource" class="overflow-hidden transition-all duration-500 max-h-0">
+                        <div class="pl-12 pr-4 py-1 space-y-1.5 border-l-2 border-emerald-500/50 ml-6 mb-2">
+                            <button onclick="jumpToSection(3, 'res-allocation')" class="flex items-center text-xs text-gray-400 hover:text-emerald-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shrink-0"></span>資源配置分析
+                            </button>
+                            <button onclick="jumpToSection(3, 'res-value-chain')" class="flex items-center text-xs text-gray-400 hover:text-emerald-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shrink-0"></span>企業活動價值鏈
+                            </button>
+                            <button onclick="jumpToSection(3, 'res-vrin')" class="flex items-center text-xs text-gray-400 hover:text-emerald-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shrink-0"></span>VR-IN特質
+                            </button>
+                            <button onclick="jumpToSection(3, 'res-core')" class="flex items-center text-xs text-gray-400 hover:text-emerald-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shrink-0"></span>核心能耐
+                            </button>
+                            <button onclick="jumpToSection(3, 'res-complementary')" class="flex items-center text-xs text-gray-400 hover:text-emerald-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-2 shrink-0"></span>互補性資產
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. 成長策略 (Hover + Click) -->
+                <div class="space-y-1 relative" onmouseenter="handleHover(true, 'growth')" onmouseleave="handleHover(false, 'growth')">
+                    <button onclick="toggleMenu('growth')" class="flex items-center justify-between w-full px-4 py-3 rounded-xl hover:bg-gray-800/40 text-gray-300 hover:text-white font-medium transition-all text-left">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 text-amber-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            <span class="font-bold">成長策略</span>
+                        </div>
+                        <svg id="chevron-growth" class="w-4 h-4 text-gray-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </button>
+                    <div id="submenu-growth" class="overflow-hidden transition-all duration-500 max-h-0">
+                        <div class="pl-12 pr-4 py-1 space-y-1.5 border-l-2 border-amber-500/50 ml-6 mb-2">
+                            <button onclick="jumpToSection(4, 'growth-intel')" class="flex items-center text-xs text-gray-400 hover:text-amber-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 shrink-0"></span>跨國產能佈局
+                            </button>
+                            <button onclick="jumpToSection(4, 'growth-tech')" class="flex items-center text-xs text-gray-400 hover:text-amber-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 shrink-0"></span>次世代技術發展
+                            </button>
+                            <button onclick="jumpToSection(4, 'growth-lta')" class="flex items-center text-xs text-gray-400 hover:text-amber-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 shrink-0"></span>防禦性長約策略
+                            </button>
+                            <button onclick="jumpToSection(4, 'growth-dynamic')" class="flex items-center text-xs text-gray-400 hover:text-amber-400 py-1.5 transition-all duration-300 w-full text-left font-medium hover:-translate-y-1 hover:scale-105 transform origin-left">
+                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-2 shrink-0"></span>動態能力分析
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. 人力職缺 -->
+                <button onclick="jumpToSection(5)" class="flex items-center space-x-3 w-full px-4 py-3 rounded-xl hover:bg-gray-800/40 text-gray-300 hover:text-white font-medium transition-all text-left">
+                    <svg class="w-5 h-5 text-cyan-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span>人力職缺</span>
+                </button>
+            </nav>
+        </div>
+
+        <div class="p-4 md:p-6 border-t border-gray-800/80 bg-gray-950/40 text-[10px] text-gray-500 shrink-0">
+            <p class="font-semibold text-gray-400">1142 國際策略管理</p>
+            <p class="mt-1">指導教授：梅筱珍 教授</p>
+            <p>助教：戴子然 助教、王毓翰 助教</p>
+        </div>
+    </div>
+
+    <!-- 主頁面區域 (加入 flex-1 min-h-0 以支援動態縮放) -->
+    <main id="landing-page" class="relative z-10 flex-1 flex flex-col justify-center items-center px-4 py-2 md:py-6 page-transition min-h-0">
+        <div class="text-center mb-2 md:mb-5">
+            <p class="text-[10px] lg:text-sm tracking-[0.2em] lg:tracking-[0.4em] uppercase text-blue-400 font-bold mb-1 lg:mb-2 drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
+                避開尖端．深耕特殊
+            </p>
+            <h1 class="text-3xl sm:text-4xl lg:text-6xl font-black tracking-tight text-white mb-1 lg:mb-2">
+                聯華電子 <span class="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">UMC</span>
+            </h1>
+        </div>
+
+        <!-- 輪播容器 (高度設定為 vh 比例，並給予上下限) -->
+        <div class="relative w-full max-w-4xl h-[32vh] min-h-[180px] max-h-[260px] flex items-center justify-center carousel-container mb-4 md:mb-6">
+            <button onmousedown="startHold('prev')" onmouseup="stopHold()" onmouseleave="stopHold()" ontouchstart="startHold('prev')" ontouchend="stopHold()" class="absolute left-2 lg:left-8 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:bg-gray-800/80 transition-all border border-gray-700 hover:border-blue-500 text-gray-400 hover:text-white focus:outline-none select-none">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            <div id="carousel-track" class="relative w-full h-full flex items-center justify-center overflow-visible"></div>
+            <button onmousedown="startHold('next')" onmouseup="stopHold()" onmouseleave="stopHold()" ontouchstart="startHold('next')" ontouchend="stopHold()" class="absolute right-2 lg:right-8 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full glass-panel flex items-center justify-center hover:bg-gray-800/80 transition-all border border-gray-700 hover:border-blue-500 text-gray-400 hover:text-white focus:outline-none select-none">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+        </div>
+
+        <div class="flex flex-col items-center space-y-2 md:space-y-4">
+            <button onclick="enterCurrentSection()" class="relative group px-8 py-2.5 md:px-12 md:py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full font-bold text-white text-sm md:text-lg tracking-wider shadow-lg shadow-blue-600/30 hover:shadow-blue-600/50 hover:from-blue-500 hover:to-indigo-500 transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 focus:outline-none overflow-hidden">
+                <span class="absolute inset-0 w-full h-full bg-white/10 transform -skew-x-12 -translate-x-full group-hover:animate-[shine_0.75s_ease-out]"></span>
+                <span class="relative z-10 flex items-center space-x-2">
+                    <span>進入章節</span>
+                    <svg class="w-4 h-4 md:w-5 md:h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+                </span>
+            </button>
+            <style>
+                @keyframes shine { 100% { transform: skewX(-12deg) translateX(100%); } }
+            </style>
+            
+            <div class="flex items-center space-x-2 text-[9px] md:text-xs text-gray-500">
+                <span class="px-1.5 py-0.5 bg-gray-800 rounded border border-gray-700">← / →</span>
+                <span class="hidden sm:inline">鍵盤 或 長按按鈕連續切換</span>
+                <span class="sm:hidden">點擊兩側切換</span>
+                <span class="mx-1">|</span>
+                <span class="flex items-center space-x-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg></span>
+                <span>滑鼠滾輪</span>
+            </div>
+        </div>
+    </main>
+
+    <!-- 頁腳 (加入 shrink-0 防止被擠壓) -->
+    <footer class="relative z-10 w-full py-3 md:py-5 border-t border-gray-800/50 glass-panel shrink-0">
+        <div class="max-w-6xl mx-auto px-4 lg:px-6 flex flex-col md:flex-row justify-between items-center text-[10px] md:text-xs text-gray-500 space-y-2 md:space-y-0">
+            <div class="flex flex-col space-y-1.5 text-center md:text-left">
+                <div class="text-blue-400 font-black tracking-widest text-xs uppercase">1142 國際策略管理</div>
+                <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-5 space-y-1 sm:space-y-0">
+                    <div><span class="text-gray-400 font-semibold">指導教授：</span><span class="text-white">梅筱珍 教授</span></div>
+                    <div><span class="text-gray-400 font-semibold">助教：</span><span class="text-white">戴子然 助教</span>、<span class="text-white">王毓翰 助教</span></div>
+                </div>
+            </div>
+            <div class="text-center md:text-right">
+                <p>© 2026 國立暨南國際大學 國際策略管理課堂發表</p>
+                <p class="text-[9px] md:text-[10px] text-gray-600 mt-0.5 md:mt-1">發表日期：2026.06.01 | 小組：G10 聯華電子</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 內容展示區 -->
+    <section id="content-container" class="hidden fixed inset-0 z-40 bg-[#070a13] flex flex-col overflow-y-auto no-scrollbar">
+        <div class="sticky top-0 z-50 w-full px-6 py-4 bg-[#070a13]/90 backdrop-blur-md border-b border-gray-800 flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <button onclick="goToHome()" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-gray-800 hover:border-gray-700 text-sm text-gray-400 hover:text-white transition-colors bg-gray-900/50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    <span>返回大廳</span>
+                </button>
+                <div class="h-4 w-px bg-gray-800"></div>
+                <span id="current-section-title" class="text-lg font-bold text-white"></span>
+            </div>
+            <div class="flex space-x-2 text-xs text-gray-400 bg-gray-900/80 p-1 rounded-lg border border-gray-800/80">
+                <button onclick="switchContentSection(-1)" class="p-1 hover:text-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg></button>
+                <span id="current-section-index" class="px-2 self-center">1 / 6</span>
+                <button onclick="switchContentSection(1)" class="p-1 hover:text-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg></button>
+            </div>
+        </div>
+        <div id="content-display-box" class="w-full max-w-6xl mx-auto px-4 md:px-6 py-8 md:py-10 flex-1"></div>
+    </section>
+
+    <!-- JavaScript 核心邏輯 -->
+    <script>
+        const SECTIONS = [
+            {
+                title: "組員介紹", subtitle: "Team Members",
+                icon: `<svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>`,
+                content: `
+                    <div class="space-y-8 animate-[fadeIn_0.5s_ease-out]">
+                        <div class="border-b border-gray-800 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white">G10 專案團隊與分工</h2>
+                            <p class="text-gray-400 text-sm mt-1">本網頁為 1142 國際策略管理課程之「期末互動式學習網頁競賽」成果，深入剖析聯華電子 (UMC) 策略地位。</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-bl-full transition-all group-hover:bg-blue-500/20"></div>
+                                <div class="w-12 h-12 rounded-full bg-blue-600/20 text-blue-400 flex items-center justify-center font-bold text-lg mb-4">G1</div>
+                                <h3 class="text-xl font-bold text-white mb-1">策略規劃組</h3>
+                                <p class="text-xs text-blue-400 mb-3 font-semibold">負責：產業分析與策略研究</p>
+                                <p class="text-sm text-gray-400">專注於聯電「避開尖端、深耕特殊」之主要策略研究，分析 22/28 奈米特殊製程及對應之資源分析評價。</p>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-bl-full transition-all group-hover:bg-purple-500/20"></div>
+                                <div class="w-12 h-12 rounded-full bg-purple-600/20 text-purple-400 flex items-center justify-center font-bold text-lg mb-4">G2</div>
+                                <h3 class="text-xl font-bold text-white mb-1">數據分析組</h3>
+                                <p class="text-xs text-purple-400 mb-3 font-semibold">負責：財務解讀與市場占比</p>
+                                <p class="text-sm text-gray-400">解析聯電 2024~2025 年營收結構、產品營收比重，以及與 Intel 合作的財務亮點。</p>
+                            </div>
+                            <div class="glass-card p-6 rounded-2xl relative overflow-hidden group">
+                                <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-bl-full transition-all group-hover:bg-emerald-500/20"></div>
+                                <div class="w-12 h-12 rounded-full bg-emerald-600/20 text-emerald-400 flex items-center justify-center font-bold text-lg mb-4">G3</div>
+                                <h3 class="text-xl font-bold text-white mb-1">網頁互動與設計組</h3>
+                                <p class="text-xs text-emerald-400 mb-3 font-semibold">負責：UI 介面開發與動態邏輯</p>
+                                <p class="text-sm text-gray-400">依據競賽標準與手繪 Wireframe，設計本網頁之鍵盤互動切換系統、流暢翻轉動畫、及高質感極簡風格。</p>
+                            </div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "公司介紹", subtitle: "Company Introduction",
+                icon: `<svg class="w-8 h-8 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>`,
+                content: `
+                    <div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
+                        <div class="border-b border-gray-800 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white">公司介紹與核心實力</h2>
+                            <p class="text-gray-400 text-sm mt-1">聯華電子 (UMC) 為全球領先的半導體晶圓代工廠，專注於提供高品質、高良率的成熟與特殊製程服務。</p>
+                        </div>
+                        <div id="com-overview" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-indigo-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">一、公司概況</h3>
+                            <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <p>聯華電子 (UMC) 為全球第四大晶圓代工廠，採取「避開尖端、深耕特殊」的策略，專注於成熟製程與特殊技術領域。提供從邏輯晶片、感測器、電源管理到先進封裝的一站式技術支援，目前核心主力為 22/28 奈米製程。</p>
+                            </div>
+                        </div>
+                        <div id="com-history" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-indigo-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">二、歷史沿革</h3>
+                            <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <p>聯華電子成立於 <strong class="text-white">1980 年</strong>，是台灣第一家上市的半導體公司。在長達四十餘年的半導體浪潮中，歷經數次重大策略轉向，最終奠定成熟與特殊製程的世界級龍頭地位：</p>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                                    <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                        <span class="text-indigo-400 font-bold block mb-1">1980 - 1994 創始與深耕</span>
+                                        <p class="text-xs text-gray-400">研發、生產與自有品牌並行。1985 年正式於台灣證券交易所掛牌上市，為台灣半導體產業開路。</p>
+                                    </div>
+                                    <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                        <span class="text-indigo-400 font-bold block mb-1">1995 純晶圓代工轉型</span>
+                                        <p class="text-xs text-gray-400">毅然決定轉型為「純晶圓代工」模式，放棄自有品牌，全心服務 IC 設計客戶。</p>
+                                    </div>
+                                    <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                        <span class="text-indigo-400 font-bold block mb-1">1998 全球收購擴產</span>
+                                        <p class="text-xs text-gray-400">收購合泰半導體、取得新日鐵半導體等晶圓廠，大舉拓展海外市場，建構全球產能防護網。</p>
+                                    </div>
+                                    <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                        <span class="text-indigo-400 font-bold block mb-1">2018 迄今 特殊製程戰略重組</span>
+                                        <p class="text-xs text-gray-400">正式宣佈停止研發 12nm 以下尖端高折舊製程，全力衝刺 22/28 奈米特殊製程，避開價格紅海，創造超高毛利與良率。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="com-locations" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-indigo-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">三、服務據點</h3>
+                            <p class="text-sm text-gray-300 mb-6 leading-relaxed">聯電旗下擁有 **12 座晶圓廠**，分佈於亞洲及美國，提供客戶極具彈性與韌性的供應鏈：</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-indigo-400 font-bold text-sm mb-1">台灣總部 (Fab 12A / 8系列)</div>
+                                    <p class="text-xs text-gray-400">核心研發中心與產能支柱，主攻最先進的成熟製程工藝，研發與特殊客製化製程的首要落腳地。</p>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-indigo-400 font-bold text-sm mb-1">新加坡廠 (Fab 12i / P3)</div>
+                                    <p class="text-xs text-gray-400">東南亞晶圓製造與交付核心基地，擴大全球佈局的領頭羊，可滿足大量跨國車用與高頻晶片代工。</p>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-indigo-400 font-bold text-sm mb-1">日本廠 (USJC) / 美國 (Intel合作)</div>
+                                    <p class="text-xs text-gray-400">深耕日本車載半導體供應鏈；同時與 Intel 於亞利桑那州展開 12nm 輕資產共同研發合作，打造次世代產能韌性。</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="com-org" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-indigo-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">四、組織架構</h3>
+                            <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <p>聯電組織架構以晶圓代工為核心，分為事業與功能層級單位。透過跨部門整合（如製程研發、製造營運、特殊技術開發等），有效支援其全球產能與高良率目標，服務全球上游的 **IC 設計廠商 (TA)**，建立穩固的客群關係。</p>
+                            </div>
+                        </div>
+                        <div id="com-finance" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-indigo-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-indigo-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">五、財務績效與營收結構</h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-center">
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-xs text-gray-500">2024 年總營收</div>
+                                    <div class="text-lg font-bold text-white mt-1">2,323 億元</div>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-xs text-gray-500">2025 年總營收</div>
+                                    <div class="text-lg font-bold text-indigo-400 mt-1">2,375 億元</div>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-xs text-gray-500">毛利率</div>
+                                    <div class="text-lg font-bold text-emerald-400 mt-1">穩定維持 29%+</div>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="text-xs text-gray-500">淨利益率</div>
+                                    <div class="text-lg font-bold text-blue-400 mt-1">18.5%</div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <div class="bg-gray-950/20 p-5 rounded-xl border border-gray-800/60">
+                                    <h4 class="font-bold text-white text-sm mb-4">製程營收佔比分析</h4>
+                                    <div class="space-y-3 text-xs">
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-gray-300">22/28 奈米 (核心獲利支柱)</span>
+                                                <span class="text-indigo-400 font-bold">37%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-indigo-500 h-1.5 rounded-full" style="width: 37%"></div></div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-gray-300">65 奈米</span>
+                                                <span class="text-gray-400">17%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-gray-500 h-1.5 rounded-full" style="width: 17%"></div></div>
+                                        </div>
+                                        <div>
+                                            <div class="flex justify-between mb-1">
+                                                <span class="text-gray-300">40 奈米 (主力製程之二)</span>
+                                                <span class="text-blue-400 font-bold">16%</span>
+                                            </div>
+                                            <div class="w-full bg-gray-800 h-1.5 rounded-full"><div class="bg-blue-500 h-1.5 rounded-full" style="width: 16%"></div></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-950/20 p-5 rounded-xl border border-gray-800/60 flex flex-col justify-between">
+                                    <div>
+                                        <h4 class="font-bold text-white text-sm mb-3">財務與經營亮點</h4>
+                                        <ul class="space-y-2 text-xs text-gray-400">
+                                            <li class="flex items-start"><span class="text-emerald-400 mr-2">✔</span><span>**穩健的 EPS 指標：** 2025 年基本每股盈餘達到 3.34 元，產能利用率維持在健康的 78% 左右。</span></li>
+                                            <li class="flex items-start"><span class="text-emerald-400 mr-2">✔</span><span>**輕資產避免資本重擔：** 與 Intel 合作 12nm 成功避開了上百億美元的建廠開銷，使資產負債表保持高靈活性。</span></li>
+                                        </ul>
+                                    </div>
+                                    <div class="text-[11px] text-indigo-400 font-medium italic pt-4 border-t border-gray-800/60 mt-4">
+                                        「透過產品組合優化與高良率加持，聯電已建立起不易動搖的財務護城河。」
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "市場分析", subtitle: "Market Analysis",
+                icon: `<svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`,
+                content: `
+                    <div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
+                        <div class="border-b border-gray-800 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white">市場分析與競爭策略</h2>
+                            <p class="text-gray-400 text-sm mt-1">透析聯電如何藉由成熟製程的獨特地位，在激烈的全球代工競爭中另闢藍海。</p>
+                        </div>
+
+                        <!-- 產業生命週期分析 (保留於最上方) -->
+                        <div class="glass-card p-6 rounded-2xl relative overflow-hidden shadow-lg">
+                            <h3 class="text-lg font-bold text-white mb-4">成熟製程之產業生命週期：成熟期</h3>
+                            <div class="relative h-12 bg-gray-900 rounded-lg overflow-hidden flex items-center mb-4">
+                                <div class="w-1/4 h-full bg-blue-900/40 flex items-center justify-center border-r border-gray-800 text-xs text-gray-500">導入期</div>
+                                <div class="w-1/4 h-full bg-blue-800/40 flex items-center justify-center border-r border-gray-800 text-xs text-gray-400">成長期</div>
+                                <div class="w-1/4 h-full bg-purple-500/30 flex items-center justify-center border-r border-purple-500/50 text-xs text-purple-300 font-bold">成熟期 (聯電定位)</div>
+                                <div class="w-1/4 h-full bg-gray-950 flex items-center justify-center text-xs text-gray-600">衰退期</div>
+                                <div class="absolute left-[62%] top-0 bottom-0 w-1 bg-purple-400 shadow-md"></div>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-400">
+                                <div><h4 class="font-bold text-white mb-1">⚙️ 市場特性</h4><p class="text-xs">製程技術完全成熟，標準化程度高，良率已達到極致穩定，是電子終端產品中用量最廣泛的基石。</p></div>
+                                <div><h4 class="font-bold text-white mb-1">💰 成本與折舊</h4><p class="text-xs">早期成熟製程設備大多已折舊完畢，能以極低邊際成本生產，建立極強的價格防線。</p></div>
+                                <div><h4 class="font-bold text-white mb-1">⚠️ 替代性威脅</h4><p class="text-xs">尖端手機雖主打3nm，但所需的電源管理、射頻晶片等仍高度依賴28nm等成熟工藝。</p></div>
+                            </div>
+                        </div>
+
+                        <!-- 1. 商業模式九宮格 -->
+                        <div id="market-bmc" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-purple-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">一、商業模式九宮格 (BMC)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-3 text-xs">
+                                <div class="glass-card p-4 rounded-xl flex flex-col justify-between h-44">
+                                    <div><div class="font-bold text-purple-400 mb-1.5">🤝 關鍵合作夥伴 (KP)</div><p class="text-gray-400 leading-relaxed">EDA軟體商、封測代工廠 (ASE)、IC設計大廠、長期產能協約 (LTA) 客戶、Intel (12nm合作)。</p></div>
+                                </div>
+                                <div class="flex flex-col space-y-3 md:col-span-1 h-44">
+                                    <div class="glass-card p-4 rounded-xl flex-1 flex flex-col justify-between">
+                                        <div><div class="font-bold text-purple-400 mb-1">⚡ 關鍵活動 (KA)</div><p class="text-gray-400">晶圓代工製造、特殊製程工藝開發。</p></div>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl flex-1 flex flex-col justify-between">
+                                        <div><div class="font-bold text-purple-400 mb-1">🎒 核心資源 (KR)</div><p class="text-gray-400">12座全球晶圓廠、智財權庫 (IP)。</p></div>
+                                    </div>
+                                </div>
+                                <div class="glass-card p-4 rounded-xl flex flex-col justify-between h-44">
+                                    <div><div class="font-bold text-purple-400 mb-1.5">💎 價值主張 (VP)</div><p class="text-gray-400 leading-relaxed">高良率且極具成本優勢的 mature-node 代工。提供 RF、車載等一站式特殊工藝平台及韌性供應鏈。</p></div>
+                                </div>
+                                <div class="flex flex-col space-y-3 md:col-span-1 h-44">
+                                    <div class="glass-card p-4 rounded-xl flex-1 flex flex-col justify-between">
+                                        <div><div class="font-bold text-purple-400 mb-1">❤️ 客戶關係 (CR)</div><p class="text-gray-400">長期產能協議 (LTA) 深度綁定。</p></div>
+                                    </div>
+                                    <div class="glass-card p-4 rounded-xl flex-1 flex flex-col justify-between">
+                                        <div><div class="font-bold text-purple-400 mb-1">🌐 通路管道 (CH)</div><p class="text-gray-400">全球銷售據點、IC 設計服務合作。</p></div>
+                                    </div>
+                                </div>
+                                <div class="glass-card p-4 rounded-xl flex flex-col justify-between h-44">
+                                    <div><div class="font-bold text-purple-400 mb-1.5">🎯 客戶細分 (CS)</div><p class="text-gray-400 leading-relaxed">追求高性價比、高度客製化特殊晶片之上游 IC 設計廠商 (Fabless)。</p></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2~6 依序... -->
+                        <div id="market-trend" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-purple-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">二、產業環境與市場趨勢</h3>
+                            <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <p>隨著 5G、AI 及車用電子的普及，聯電將技術焦點緊抓通訊及高速運算領域的爆發性成長：</p>
+                                <ul class="list-disc pl-5 space-y-2 text-gray-400">
+                                    <li><strong class="text-white">5G / Wi-Fi 升級：</strong> 需將 Wi-Fi MAC、基頻及 RFFE（射頻前端）高度整合，這正是聯電成熟特殊製程強項。</li>
+                                    <li><strong class="text-white">AI 伺服器與矽光子 (CPO)：</strong> 市場預期光學 I/O 將是 AI 架構核心。聯電取得 imec 授權，推出 12 吋矽光子平台。</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="market-competitor" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-purple-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">三、策略群組-競爭者分析</h3>
+                            <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                <p class="text-gray-400 text-xs leading-relaxed">
+                                    相較於台積電與三星在先進製程上的鉅額資本投入，聯電選擇<strong class="text-purple-400">「避開尖端」</strong>。在 14nm 以下技術競爭中，聯電不自行蓋廠，而是透過與 Intel 的 12nm 合作以<strong class="text-white">輕資產模式</strong>享有先進產能。同時防禦中國大陸成熟晶圓廠的低價競爭，主打 RFSOI、BCD 等高壁壘的<strong class="text-purple-400">特殊製程</strong>。
+                                </p>
+                            </div>
+                        </div>
+                        <div id="market-dynamic" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-purple-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">四、動態競爭分析</h3>
+                            <div class="space-y-4 text-sm text-gray-300 leading-relaxed">
+                                <p class="text-gray-400 text-xs">
+                                    為降低單向接單產能波動的風險，聯電積極與 IC 設計大廠簽署 <strong class="text-white">長期產能承諾協約 (LTA)</strong>。透過 LTA，聯電將訂單與價格鎖定，成功在景氣循環下行及對手大打價格戰時，依舊維持健康的產能利用率（約 78%）並確保高額利潤。
+                                </p>
+                            </div>
+                        </div>
+                        <div id="market-pestel" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-purple-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">五、PESTEL 總體環境分析</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-400">
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-purple-400 block mb-1">P (政治因素)</strong>中美科技戰等地緣政治風險。聯電藉跨國產能合作打造多元地緣防禦鏈。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-purple-400 block mb-1">E (經濟因素)</strong>全球通膨及供應鏈重組壓力。聯電憑藉設備折舊完畢優勢，維持高獲利。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-purple-400 block mb-1">S (社會因素)</strong>萬物聯網趨勢，推動通訊終端晶片需求暴增。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-purple-400 block mb-1">T (技術因素)</strong>矽光子 (CPO)、W2W 3D IC 一站式先進封裝、12nm 架構技術突破。</div>
+                            </div>
+                        </div>
+                        <div id="market-six-forces" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-purple-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-purple-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">六、六力分析</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-gray-400">
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-white block mb-1">1. 現有競爭者 (高)</strong>成熟製程門檻相對低，陸廠擴產導致價格戰；聯電以特殊工藝作護城河。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-white block mb-1">2. 買方議價能力 (中)</strong>聯電利用長約 (LTA) 及一站式封裝提高轉單成本。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-white block mb-1">3. 供應商議價能力 (高)</strong>關鍵設備與矽晶圓材料被極少數國際大廠壟斷。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-white block mb-1">4. 潛在進入者 (低)</strong>建廠資本支出龐大、良率累積需要數十年，新進者極難生存。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-gray-800"><strong class="text-white block mb-1">5. 替代品威脅 (低)</strong>一般電源管理與射頻晶片無誘因轉換至 7nm 以下，缺乏直接替代品。</div>
+                                <div class="bg-gray-950/40 p-3 rounded-lg border border-purple-500/30"><strong class="text-purple-400 block mb-1">6. 互補者的力量 (強)</strong>EDA 軟體商、封測代工廠 (ASE)、以及 Intel 提供的輕資產產能。</div>
+                            </div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "資源分析", subtitle: "Resource Analysis",
+                icon: `<svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622"></path></svg>`,
+                content: `
+                    <div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
+                        <div class="border-b border-gray-800 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white">企業資源與核心能耐分析</h2>
+                            <p class="text-gray-400 text-sm mt-1">全面性評估聯電的內部資源配置、價值鏈環節與其不可被取代的持續性競爭優勢。</p>
+                        </div>
+
+                        <!-- 1. 資源配置分析 -->
+                        <div id="res-allocation" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-emerald-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center"><svg class="w-5 h-5 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> 一、資源配置分析</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800 flex flex-col justify-between">
+                                    <div>
+                                        <div class="text-[10px] text-emerald-400 tracking-wider uppercase font-bold mb-1">CAPEX</div>
+                                        <h4 class="text-white font-bold mb-2">優化資本支出</h4>
+                                        <p class="text-xs text-gray-400">大幅減少無利可圖的尖端製程（14nm以下）建廠開銷，專注優化現有 22/28nm 產能與特殊製程設備升級。</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800 flex flex-col justify-between">
+                                    <div>
+                                        <div class="text-[10px] text-emerald-400 tracking-wider uppercase font-bold mb-1">R&D</div>
+                                        <h4 class="text-white font-bold mb-2">研發精準投入</h4>
+                                        <p class="text-xs text-gray-400">資金高度集中於次世代具潛力的技術，如：攜手 Intel 的 12nm FinFET 研發、以及 3D IC / 矽光子 (CPO) 等先進封裝領域。</p>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-950/40 p-4 rounded-xl border border-gray-800 flex flex-col justify-between">
+                                    <div>
+                                        <div class="text-[10px] text-emerald-400 tracking-wider uppercase font-bold mb-1">Capacity</div>
+                                        <h4 class="text-white font-bold mb-2">產能長約鎖定</h4>
+                                        <p class="text-xs text-gray-400">推動 LTA（長期產能承諾協約），將珍貴的成熟產能提前配置給核心 IC 設計客戶，鎖定獲利與現金流。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. 企業活動價值鏈 -->
+                        <div id="res-value-chain" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-emerald-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center"><svg class="w-5 h-5 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 二、企業活動價值鏈</h3>
+                            
+                            <div class="w-full bg-gray-950/60 rounded-xl border border-gray-800 p-4">
+                                <div class="space-y-2 mb-4 border-b border-gray-800 pb-4">
+                                    <div class="flex items-center text-xs">
+                                        <div class="w-24 shrink-0 font-bold text-gray-500 text-right pr-4">企業基礎設施</div>
+                                        <div class="flex-1 bg-gray-800/50 p-2 rounded text-gray-300">12座跨國晶圓廠管理、LTA 長期合約風險控管、Intel 美國廠區合作佈局</div>
+                                    </div>
+                                    <div class="flex items-center text-xs">
+                                        <div class="w-24 shrink-0 font-bold text-gray-500 text-right pr-4">人力資源管理</div>
+                                        <div class="flex-1 bg-gray-800/50 p-2 rounded text-gray-300">全球半導體菁英招募、高良率製程工程師與 IP 設計專家培育</div>
+                                    </div>
+                                    <div class="flex items-center text-xs">
+                                        <div class="w-24 shrink-0 font-bold text-gray-500 text-right pr-4">技術發展</div>
+                                        <div class="flex-1 bg-gray-800/50 p-2 rounded text-emerald-400 font-semibold border border-emerald-900/50">特殊製程平台 (HV, RFSOI) 開發、矽光子 (CPO) 與 3D IC 先進封裝研發</div>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col md:flex-row gap-2 text-center text-xs">
+                                    <div class="flex-1 bg-blue-900/20 border border-blue-900/50 p-3 rounded-lg">
+                                        <div class="font-bold text-blue-400 mb-1">進貨物流</div><span class="text-gray-400">矽晶圓、化學氣體採購與庫存管理</span>
+                                    </div>
+                                    <div class="flex-1 bg-indigo-900/20 border border-indigo-900/50 p-3 rounded-lg shadow-[0_0_15px_rgba(99,102,241,0.1)]">
+                                        <div class="font-bold text-indigo-400 mb-1">製造生產 (核心)</div><span class="text-gray-300 font-semibold">22/28nm 高良率代工、特殊工藝客製</span>
+                                    </div>
+                                    <div class="flex-1 bg-blue-900/20 border border-blue-900/50 p-3 rounded-lg">
+                                        <div class="font-bold text-blue-400 mb-1">出貨物流</div><span class="text-gray-400">全球廠區準時交貨 (JIT) 與封裝</span>
+                                    </div>
+                                    <div class="flex-1 bg-blue-900/20 border border-blue-900/50 p-3 rounded-lg">
+                                        <div class="font-bold text-blue-400 mb-1">行銷與銷售</div><span class="text-gray-400">全球業務、LTA 長約談判與產能分配</span>
+                                    </div>
+                                    <div class="flex-1 bg-blue-900/20 border border-blue-900/50 p-3 rounded-lg">
+                                        <div class="font-bold text-blue-400 mb-1">售後服務</div><span class="text-gray-400">EDA工具與一站式整合設計服務</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. VR-IN 特質 -->
+                        <div id="res-vrin" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-emerald-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center"><svg class="w-5 h-5 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622"></path></svg> 三、VR-IN 資源特質評價</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-sm text-gray-300 border-collapse">
+                                    <thead>
+                                        <tr class="border-b border-gray-800 bg-gray-900/50">
+                                            <th class="p-4 font-bold text-white w-1/4">分析資源或能力</th>
+                                            <th class="p-4 font-bold text-emerald-400 text-center">V (價值)</th>
+                                            <th class="p-4 font-bold text-emerald-400 text-center">R (稀有)</th>
+                                            <th class="p-4 font-bold text-emerald-400 text-center">I (難以模仿)</th>
+                                            <th class="p-4 font-bold text-emerald-400 text-center">N (不可替代)</th>
+                                            <th class="p-4 font-bold text-blue-400 text-right">競爭優勢結論</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-800/50">
+                                        <tr class="hover:bg-gray-900/20">
+                                            <td class="p-4 font-semibold text-white">22/28nm 成熟製程之產能規模</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-red-500 font-bold">✘ No</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-right text-indigo-400 font-semibold">暫時性競爭優勢</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-900/20">
+                                            <td class="p-4 font-semibold text-white">特殊製程技術 (HV/RFSOI)</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-right text-emerald-400 font-black">持續性競爭優勢</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-900/20">
+                                            <td class="p-4 font-semibold text-white">與 Intel 之跨國產能合作</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-center text-emerald-400 font-bold">✔ Yes</td>
+                                            <td class="p-4 text-right text-emerald-400 font-black">持續性競爭優勢</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- 4. 核心能耐 -->
+                        <div id="res-core" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-emerald-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center"><svg class="w-5 h-5 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg> 四、核心能耐 (Core Competencies)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                                <div class="bg-gradient-to-br from-emerald-900/30 to-gray-900/50 p-5 rounded-xl border border-emerald-500/30">
+                                    <div class="text-white font-bold mb-2">💎 超高良率的成熟製造力</div>
+                                    <p class="text-xs text-gray-400 leading-relaxed">在 22/28 奈米與 40 奈米領域擁有無可匹敵的良率控制力，使單位成本極小化，形成堅固的毛利護城河。</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-emerald-900/30 to-gray-900/50 p-5 rounded-xl border border-emerald-500/30">
+                                    <div class="text-white font-bold mb-2">🧠 特殊技術智財庫 (IP)</div>
+                                    <p class="text-xs text-gray-400 leading-relaxed">數十年的研發累積了豐富的 RFSOI (射頻)、BCD (混合高壓)、eNVM (嵌入式記憶體) 專利與設計平台。</p>
+                                </div>
+                                <div class="bg-gradient-to-br from-emerald-900/30 to-gray-900/50 p-5 rounded-xl border border-emerald-500/30">
+                                    <div class="text-white font-bold mb-2">🌐 彈性多元的全球供應鏈</div>
+                                    <p class="text-xs text-gray-400 leading-relaxed">12 座廠房橫跨台灣、新加坡、日本與美國，具備卓越的跨國廠區良率一致性移轉與地緣政治避險能力。</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. 互補性資產 -->
+                        <div id="res-complementary" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-emerald-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-emerald-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4 flex items-center"><svg class="w-5 h-5 text-emerald-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg> 五、互補性資產 (Complementary Assets)</h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center p-4 bg-gray-950/40 rounded-xl border border-gray-800">
+                                    <div class="w-12 h-12 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold shrink-0 mr-4">1</div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm">EDA 與 IP 設計生態系</h4>
+                                        <p class="text-xs text-gray-400 mt-1">與全球頂尖 EDA 軟體商合作，提供 IC 設計客戶極其順暢的軟硬體驗證平台，降低客戶設計失敗的風險。</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-4 bg-gray-950/40 rounded-xl border border-gray-800">
+                                    <div class="w-12 h-12 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold shrink-0 mr-4">2</div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm">封測代工大廠 (ASE等) 夥伴關係</h4>
+                                        <p class="text-xs text-gray-400 mt-1">聯電積極與封裝廠合作推進 W2W 等 3D IC 先進封裝，提供代工後段的一站式強大互補支援。</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-4 bg-gray-950/40 rounded-xl border border-gray-800">
+                                    <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold shrink-0 mr-4">3</div>
+                                    <div>
+                                        <h4 class="text-white font-bold text-sm">跨國輕資產夥伴 (Intel)</h4>
+                                        <p class="text-xs text-gray-400 mt-1">Intel 提供其位於亞利桑那州的現成廠房與 FinFET 經驗，完美補足了聯電在美國本土缺乏先進產能的缺口。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "成長策略", subtitle: "Growth Strategy",
+                icon: `<svg class="w-8 h-8 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>`,
+                content: `
+                    <div class="space-y-12 animate-[fadeIn_0.5s_ease-out]">
+                        <div class="border-b border-gray-800 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white">未來成長策略與動態能力</h2>
+                            <p class="text-gray-400 text-sm mt-1">針對成熟製程大宗商品化威脅，聯電部署多維度成長軸線與動態調整能力。</p>
+                        </div>
+
+                        <!-- 1. 跨國產能佈局 -->
+                        <div id="growth-intel" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-amber-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">一、跨國產能佈局 (Intel 12nm)</h3>
+                            <div class="flex flex-col md:flex-row gap-4 items-center bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                <div class="flex-1 text-center">
+                                    <div class="text-2xl font-black text-blue-400">UMC</div>
+                                    <p class="text-xs text-gray-400">成熟代工經驗與強大客戶群</p>
+                                </div>
+                                <div class="text-gray-500 font-black text-xl">+</div>
+                                <div class="flex-1 text-center">
+                                    <div class="text-2xl font-black text-blue-600">Intel</div>
+                                    <p class="text-xs text-gray-400">美國在地產能與 FinFET 技術</p>
+                                </div>
+                                <div class="text-gray-500 font-black text-xl">=</div>
+                                <div class="flex-1 text-center bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg shadow-[0_0_15px_rgba(245,158,11,0.15)]">
+                                    <div class="text-lg font-bold text-amber-400">輕資產高韌性供應鏈</div>
+                                    <p class="text-[10px] text-gray-300 mt-1">規避百億建廠風險，提供美國在地化選擇，預計 2027 年量產</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 2. 次世代技術發展 -->
+                        <div id="growth-tech" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-amber-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">二、次世代技術發展</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-gray-950/40 p-5 rounded-xl border border-gray-800">
+                                    <div class="text-amber-400 font-bold mb-2">⚡ 矽光子 (CPO) 技術</div>
+                                    <p class="text-xs text-gray-300 mb-2">與 imec 簽約授權 iSiPP300 製程，以「光」取代「銅」進行資料傳輸。</p>
+                                    <div class="text-[10px] text-gray-500 bg-gray-900 p-2 rounded">大幅降低延遲、提升頻寬，精準瞄準下一代 AI 伺服器核心互連架構。</div>
+                                </div>
+                                <div class="bg-gray-950/40 p-5 rounded-xl border border-gray-800">
+                                    <div class="text-amber-400 font-bold mb-2">📦 3D IC 一站式先進封裝</div>
+                                    <p class="text-xs text-gray-300 mb-2">積極開發 W2W (Wafer-to-Wafer) 等矽堆疊技術，完美整合記憶體與處理器。</p>
+                                    <div class="text-[10px] text-gray-500 bg-gray-900 p-2 rounded">提升客戶系統級晶片性價比，同時大幅增加 IC 設計客戶的轉單成本。</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. 防禦性長約策略 -->
+                        <div id="growth-lta" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-amber-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">三、防禦性長約策略 (LTA)</h3>
+                            <div class="bg-gray-950/40 p-5 rounded-xl border border-gray-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                                <div class="text-center flex-1">
+                                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-2 text-xl">📝</div>
+                                    <div class="text-sm font-bold text-white">簽署長期產能協議</div>
+                                    <div class="text-[10px] text-gray-400">深度綁定頂尖 IC 設計客戶</div>
+                                </div>
+                                <div class="text-amber-400 rotate-90 md:rotate-0">➔</div>
+                                <div class="text-center flex-1">
+                                    <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-2 text-xl">🔒</div>
+                                    <div class="text-sm font-bold text-white">鎖定價格與產能</div>
+                                    <div class="text-[10px] text-gray-400">有效規避景氣下行與陸廠價格戰</div>
+                                </div>
+                                <div class="text-amber-400 rotate-90 md:rotate-0">➔</div>
+                                <div class="text-center flex-1 bg-amber-500/10 border border-amber-500/30 p-3 rounded-lg">
+                                    <div class="w-8 h-8 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-1 text-lg">📈</div>
+                                    <div class="text-sm font-bold text-amber-400">穩定高產能利用率</div>
+                                    <div class="text-[10px] text-gray-300">維持約 75~80% 的健康獲利與營收</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. 動態能力分析 -->
+                        <div id="growth-dynamic" class="scroll-mt-24 p-6 rounded-2xl bg-gray-900/30 border border-amber-500/20 relative overflow-hidden shadow-lg">
+                            <div class="absolute top-0 left-0 w-1.5 h-full bg-amber-500"></div>
+                            <h3 class="text-xl font-bold text-white mb-4">四、動態能力分析 (Dynamic Capabilities)</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-start bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center shrink-0 mr-4 text-indigo-400 font-bold text-lg">1</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">感知能力 (Sensing)</h4>
+                                        <p class="text-xs text-gray-300">敏銳察覺 14nm 以下尖端製程「資本支出過高、折舊回收困難」的風險；同時精準洞察 5G、AIoT 與車用電子對「成熟製程 (28/22nm)」及「特殊工藝 (RF, BCD)」龐大需求的爆發點。</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center shrink-0 mr-4 text-emerald-400 font-bold text-lg">2</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">掌握能力 (Seizing)</h4>
+                                        <p class="text-xs text-gray-300">毅然決然停止 12nm 以下的自主建廠裝備競賽，將資源 (CAPEX & R&D) 全面集中於成熟製程與特殊技術，並透過簽署 LTA (長期產能協議) 迅速鎖定核心客戶群。</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-start bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                                    <div class="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center shrink-0 mr-4 text-amber-400 font-bold text-lg">3</div>
+                                    <div>
+                                        <h4 class="text-white font-bold mb-1">轉型與重構能力 (Reconfiguring)</h4>
+                                        <p class="text-xs text-gray-300">打破傳統代工單打獨鬥思維，以「輕資產模式」與競爭對手 Intel 展開跨國產能防禦合作；並跨足 3D IC 與矽光子 (CPO) 等先進封裝生態系，重塑企業價值鏈與全球供應鏈韌性。</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>`
+            },
+            {
+                title: "人力職缺", subtitle: "Careers",
+                icon: `<svg class="w-8 h-8 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>`,
+                content: `
+                    <div class="space-y-8 animate-[fadeIn_0.5s_ease-out]">
+                        <div class="border-b border-gray-800 pb-4">
+                            <h2 class="text-3xl font-extrabold text-white">人力職缺與招募</h2>
+                            <p class="text-gray-400 text-sm mt-1">加入聯華電子，與我們一起深耕特殊製程，共創半導體未來。</p>
+                        </div>
+                        <div class="glass-card p-8 rounded-2xl flex flex-col items-center justify-center text-center min-h-[300px]">
+                            <svg class="w-16 h-16 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            <h3 class="text-xl font-bold text-white mb-2">最新職缺建置中</h3>
+                            <p class="text-sm text-gray-400">研發工程師、製程整合工程師等熱門職缺即將上線，敬請期待。</p>
+                        </div>
+                    </div>`
+            }
+        ];
+
+        let activeIndex = 1; 
+
+        function initCarousel() {
+            const track = document.getElementById('carousel-track');
+            track.innerHTML = '';
+            SECTIONS.forEach((item, index) => {
+                const cardHtml = `
+                    <div id="carousel-item-${index}" onclick="setActiveIndex(${index})" class="carousel-item absolute w-[65vw] sm:w-[280px] md:w-[320px] p-4 md:p-6 rounded-2xl glass-panel text-center cursor-pointer flex flex-col justify-center items-center h-[25vh] max-h-[220px] min-h-[160px]">
+                        <div class="flex justify-center mb-2 md:mb-4"><div class="p-3 md:p-4 bg-blue-500/10 rounded-full text-blue-400">${item.icon}</div></div>
+                        <div>
+                            <span class="text-[10px] md:text-xs tracking-wider uppercase text-blue-500 font-semibold mb-1 md:mb-2 block">${item.subtitle}</span>
+                            <h3 class="text-xl md:text-3xl font-black text-white">${item.title}</h3>
+                        </div>
+                    </div>`;
+                track.innerHTML += cardHtml;
+            });
+            updateCarousel();
+        }
+
+        function updateCarousel() {
+            SECTIONS.forEach((item, index) => {
+                const card = document.getElementById(`carousel-item-${index}`);
+                if (!card) return;
+                let diff = index - activeIndex;
+                const total = SECTIONS.length;
+                if (diff < -total / 2) diff += total;
+                else if (diff > total / 2) diff -= total;
+
+                let transformStyle = '', opacity = 0, zIndex = 0, pointerEvents = 'none';
+
+                if (diff === 0) {
+                    transformStyle = 'translateX(0) scale(1.15) translateZ(80px) rotateY(0deg)';
+                    opacity = 1; zIndex = 20; pointerEvents = 'auto';
+                    card.style.borderColor = 'rgba(59, 130, 246, 0.5)';
+                    card.style.boxShadow = '0 15px 35px -10px rgba(59, 130, 246, 0.4)';
+                } else if (diff === -1) {
+                    transformStyle = 'translateX(-110%) scale(0.8) translateZ(-50px) rotateY(35deg)';
+                    opacity = 0.5; zIndex = 10; pointerEvents = 'auto';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)'; card.style.boxShadow = 'none';
+                } else if (diff === 1) {
+                    transformStyle = 'translateX(110%) scale(0.8) translateZ(-50px) rotateY(-35deg)';
+                    opacity = 0.5; zIndex = 10; pointerEvents = 'auto';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)'; card.style.boxShadow = 'none';
+                } else {
+                    transformStyle = diff < 0 
+                        ? 'translateX(-220%) scale(0.6) translateZ(-150px) rotateY(55deg)' 
+                        : 'translateX(220%) scale(0.6) translateZ(-150px) rotateY(-55deg)';
+                    opacity = 0; zIndex = 0; pointerEvents = 'none';
+                    card.style.borderColor = 'rgba(255, 255, 255, 0.08)'; card.style.boxShadow = 'none';
+                }
+                card.style.transform = transformStyle; card.style.opacity = opacity;
+                card.style.zIndex = zIndex; card.style.pointerEvents = pointerEvents;
+            });
+        }
+
+        function setActiveIndex(index) {
+            if (index < 0) activeIndex = SECTIONS.length - 1;
+            else if (index >= SECTIONS.length) activeIndex = 0;
+            else activeIndex = index;
+            updateCarousel();
+        }
+
+        function prevSlide() { setActiveIndex(activeIndex - 1); }
+        function nextSlide() { setActiveIndex(activeIndex + 1); }
+
+        let holdInterval, holdTimeout;
+        function startHold(direction) {
+            if (direction === 'next') nextSlide(); else prevSlide();
+            holdTimeout = setTimeout(() => {
+                holdInterval = setInterval(() => { if (direction === 'next') nextSlide(); else prevSlide(); }, 400); 
+            }, 400);
+        }
+        function stopHold() { clearTimeout(holdTimeout); clearInterval(holdInterval); }
+
+        let isTouchDevice = false;
+        window.addEventListener('touchstart', () => { isTouchDevice = true; }, { passive: true });
+
+        function handleHover(isEnter, id) {
+            if (isTouchDevice) return; 
+            const submenu = document.getElementById(`submenu-${id}`);
+            const chevron = document.getElementById(`chevron-${id}`);
+            if (isEnter) {
+                submenu.classList.replace('max-h-0', 'max-h-[500px]');
+                chevron.classList.add('rotate-180');
+            } else {
+                submenu.classList.replace('max-h-[500px]', 'max-h-0');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleMenu(id) {
+            const submenu = document.getElementById(`submenu-${id}`);
+            const chevron = document.getElementById(`chevron-${id}`);
+            if (submenu.classList.contains('max-h-0')) {
+                submenu.classList.replace('max-h-0', 'max-h-[500px]');
+                chevron.classList.add('rotate-180');
+            } else {
+                submenu.classList.replace('max-h-[500px]', 'max-h-0');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => overlay.classList.add('hidden'), 300);
+            } else {
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                sidebar.classList.remove('-translate-x-full');
+            }
+        }
+
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+            
+            ['com', 'market', 'resource', 'growth'].forEach(id => {
+                document.getElementById(`submenu-${id}`)?.classList.replace('max-h-[500px]', 'max-h-0');
+                document.getElementById(`chevron-${id}`)?.classList.remove('rotate-180');
+            });
+        }
+
+        function jumpToSection(index, elementId = null) {
+            activeIndex = index;
+            updateCarousel();
+            enterCurrentSection();
+            closeSidebar();
+            if (elementId) {
+                setTimeout(() => {
+                    const targetEl = document.getElementById(elementId);
+                    if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 350); 
+            }
+        }
+
+        let scrollTimeout = null;
+        window.addEventListener('wheel', function(event) {
+            if (!document.getElementById('content-container').classList.contains('hidden')) return; 
+            if (scrollTimeout) return;
+            if (event.deltaY > 0) nextSlide(); 
+            else if (event.deltaY < 0) prevSlide(); 
+            scrollTimeout = setTimeout(() => { scrollTimeout = null; }, 600); 
+        });
+
+        window.addEventListener('keydown', function(event) {
+            const isContentOpen = !document.getElementById('content-container').classList.contains('hidden');
+            if (isContentOpen) {
+                if (event.key === "ArrowLeft") switchContentSection(-1);
+                else if (event.key === "ArrowRight") switchContentSection(1);
+                else if (event.key === "Escape") goToHome();
+            } else {
+                if (event.key === "ArrowLeft") prevSlide();
+                else if (event.key === "ArrowRight") nextSlide();
+                else if (event.key === "Enter") enterCurrentSection();
+            }
+        });
+
+        document.body.addEventListener('click', () => window.focus());
+
+        function enterCurrentSection() {
+            const item = SECTIONS[activeIndex];
+            document.getElementById('current-section-title').innerText = item.title;
+            document.getElementById('current-section-index').innerText = `${activeIndex + 1} / ${SECTIONS.length}`;
+            document.getElementById('content-display-box').innerHTML = item.content;
+
+            const landing = document.getElementById('landing-page');
+            const content = document.getElementById('content-container');
+            landing.style.transform = 'scale(0.9) translateZ(-100px)';
+            landing.style.opacity = '0';
+            
+            setTimeout(() => {
+                landing.classList.add('hidden');
+                content.classList.remove('hidden');
+                content.scrollTop = 0;
+            }, 300);
+        }
+
+        function switchContentSection(direction) {
+            let nextIdx = activeIndex + direction;
+            if (nextIdx < 0) nextIdx = SECTIONS.length - 1;
+            if (nextIdx >= SECTIONS.length) nextIdx = 0;
+            activeIndex = nextIdx;
+            
+            updateCarousel();
+            const item = SECTIONS[activeIndex];
+            document.getElementById('current-section-title').innerText = item.title;
+            document.getElementById('current-section-index').innerText = `${activeIndex + 1} / ${SECTIONS.length}`;
+            
+            const displayBox = document.getElementById('content-display-box');
+            displayBox.style.opacity = '0';
+            setTimeout(() => {
+                displayBox.innerHTML = item.content;
+                displayBox.style.opacity = '1';
+                document.getElementById('content-container').scrollTop = 0; 
+            }, 150);
+        }
+
+        function goToHome() {
+            const landing = document.getElementById('landing-page');
+            const content = document.getElementById('content-container');
+            content.classList.add('hidden');
+            landing.classList.remove('hidden');
+            setTimeout(() => {
+                landing.style.transform = 'scale(1) translateZ(0)';
+                landing.style.opacity = '1';
+                updateCarousel();
+            }, 50);
+        }
+
+        window.onload = function() {
+            initCarousel();
+            window.focus();
+        };
+    </script>
+</body>
+</html>
