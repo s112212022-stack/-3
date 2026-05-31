@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEON・LEGACY | 團隊介紹</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
+        :root {
+            --neon-pink: #ff00ff;
+            --neon-cyan: #00ffff;
+            --neon-purple: #8b00ff;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .title-font {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+        .hero-bg {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 100%);
+        }
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .neon-text {
+            text-shadow:
+                0 0 10px var(--neon-cyan),
+                0 0 20px var(--neon-cyan),
+                0 0 40px var(--neon-pink);
+        }
+        .member-card {
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .member-card:hover {
+            transform: translateY(-20px) scale(1.03);
+            box-shadow: 0 0 60px -10px var(--neon-cyan);
+        }
+        .card-glow {
+            position: relative;
+        }
+        .card-glow::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #8b00ff);
+            z-index: -1;
+            filter: blur(20px);
+            opacity: 0;
+            transition: all 0.4s;
+            border-radius: 20px;
+        }
+        .member-card:hover .card-glow::before {
+            opacity: 0.7;
+        }
+        .avatar {
+            transition: all 0.6s ease;
+        }
+        .member-card:hover .avatar {
+            transform: scale(1.1) rotate(8deg);
+        }
+        .scanline {
+            position: absolute;
+            top: -100%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(transparent, rgba(0, 255, 255, 0.8), transparent);
+            animation: scan 4s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: -100%; }
+            100% { top: 300%; }
+        }
+        .process-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .process-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 0 40px -10px var(--neon-cyan);
+        }
+    </style>
+</head>
+<body class="bg-black text-white overflow-x-hidden">
+    <!-- Navbar -->
+    <nav class="fixed top-0 w-full z-50 glass border-b border-white/10">
+        <div class="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-24 h-8 rounded-xl bg-white flex items-center justify-center border border-blue-600">
+                    <span class="text-blue-600 font-bold text-xl">UMC</span>
+                </div>
+                <h1 class="title-font text-2xl font-bold tracking-tighter text-white">聯華電子</h1>
+            </div>
+            <div class="flex items-center gap-8 text-sm">
+                <a href="#" class="hover:text-cyan-400 transition-colors">首頁</a>
+                <a href="#team-section" class="hover:text-cyan-400 transition-colors">團隊</a>
+                <a href="#process-section" class="hover:text-cyan-400 transition-colors">網頁設計流程</a>
+            
+                <button onclick="startVoiceNavigation()"
+                        class="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-400 hover:to-purple-400 rounded-2xl font-medium transition-all duration-300">
+                    <i class="fas fa-volume-up"></i>
+                    <span>語音導覽</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section class="hero-bg min-h-screen flex items-center relative">
+        <div class="absolute inset-0 bg-[radial-gradient(at_center,#ff00ff10_0%,transparent_70%)]"></div>
+        <div class="max-w-7xl mx-auto px-6 pt-20">
+            <div class="text-center max-w-4xl mx-auto">
+                <div class="inline-flex items-center gap-2 bg-white/5 rounded-full px-6 py-2 text-sm mb-6 border border-white/10">
+                    <div class="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
+                    2026 夢幻團隊
+                </div>
+  
+                <h1 class="title-font text-7xl md:text-8xl font-bold leading-none mb-6 neon-text">
+                    我們是<br>
+                    <span class="bg-gradient-to-r from-pink-400 via-cyan-400 to-purple-400 bg-clip-text text-transparent">未來締造者</span>
+                </h1>
+  
+                <p class="text-xl text-gray-400 max-w-lg mx-auto mb-10">
+                    每個成員都是獨一無二的星辰，共同點亮這片數位宇宙
+                </p>
+  
+                <button onclick="document.getElementById('team-section').scrollIntoView({ behavior: 'smooth' })"
+                        class="group px-10 py-4 bg-white text-black rounded-2xl font-medium flex items-center gap-3 mx-auto hover:bg-cyan-400 hover:text-black transition-all duration-300">
+                    探索團隊
+                    <i class="fas fa-arrow-down group-active:rotate-45 transition-transform"></i>
+                </button>
+            </div>
+        </div>
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-8 text-4xl opacity-30">
+            <i class="fab fa-react animate-bounce" style="animation-delay: 0s"></i>
+            <i class="fas fa-bolt animate-bounce" style="animation-delay: 0.3s"></i>
+            <i class="fas fa-star animate-bounce" style="animation-delay: 0.6s"></i>
+        </div>
+        <div class="scanline"></div>
+    </section>
+
+    <!-- Team Section -->
+    <section id="team-section" class="py-24 relative">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="title-font text-5xl font-bold mb-3">核心成員</h2>
+                <p class="text-gray-400">每一位都是傳奇</p>
+            </div>
+  
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Member 1 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/何敏綺.1.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-cyan-400/50">112212022</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">何敏綺</h3>
+                        <p class="text-cyan-400 mb-4">Sylvie</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">喜歡電影、音樂，同時喜歡躺在床上的時光</p>
+                    </div>
+                </div>
+                <!-- Member 2 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/吳宥璇.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-purple-400/50">112212004</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">吳宥璇</h3>
+                        <p class="text-purple-400 mb-4">Sunny</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">喜歡美食、小說，並且享受獨處的時光</p>
+                    </div>
+                </div>
+                <!-- Member 3 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/陳佳暄.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-pink-400/50">112212021</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">陳佳暄</h3>
+                        <p class="text-pink-400 mb-4">M.J.</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">人生要過的像Joshua一樣👍
+找不到我的話我不是在追星的路上就是在見歐爸的路上😍</p>
+                    </div>
+                </div>
+                <!-- Member 4 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/蔡依伶.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-cyan-400/50">112212027</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">蔡依伶</h3>
+                        <p class="text-cyan-400 mb-4">Jolin</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">經常用手機拍下生活點滴，喜歡美食、聽音樂、看電影，擅長傾聽別人的想法</p>
+                    </div>
+                </div>
+                <!-- Member 5 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/王懿萱.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-purple-400/50">112212068</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">王懿萱</h3>
+                        <p class="text-purple-400 mb-4">Kyra</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">喜歡透過拍照與影片記錄生活，也對畫圖、電影、看書充滿興趣</p>
+                    </div>
+                </div>
+                <!-- Member 6 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/尤姿怡.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-pink-400/50">112212013</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">尤姿怡</h3>
+                        <p class="text-pink-400 mb-4">Kelsey</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">平常喜歡待在家、聽音樂、散步，不喜歡夏天</p>
+                    </div>
+                </div>
+                <!-- Member 7 -->
+                <div class="member-card group rounded-3xl overflow-hidden card-glow bg-zinc-950 border border-white/10">
+                    <div class="relative h-80">
+                        <img src="attachments/5942f0f9-7388-4439-91b5-a79888204e9d.jpg" class="avatar w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-black/50 to-black"></div>
+                        <div class="absolute top-6 right-6 px-4 py-1 bg-black/70 text-xs tracking-widest rounded-full border border-cyan-400/50">111212094</div>
+                    </div>
+                    <div class="p-8">
+                        <h3 class="text-3xl font-bold title-font mb-1">鄭皓文</h3>
+                        <p class="text-cyan-400 mb-4">Danny</p>
+                        <p class="text-gray-400 text-sm leading-relaxed">熱衷思維層面的升級，閒暇時間熱愛接觸大自然的活動，也愛玩電腦遊戲</p>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- 網頁設計流程 -->
+            <div id="process-section" class="mt-24">
+                <div class="text-center mb-12">
+                    <h2 class="title-font text-5xl font-bold mb-3 neon-text">網頁設計流程</h2>
+                    <p class="text-gray-400">從概念到上線，我們的專業流程</p>
+                </div>
+        
+                <div class="relative max-w-5xl mx-auto">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-4 relative">
+                        <div class="hidden md:block absolute top-1/2 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-cyan-400/50 to-transparent -translate-y-1/2 z-0"></div>
+                
+                        <!-- Step 1 -->
+                        <div class="process-card relative z-10 bg-zinc-950 border border-white/10 rounded-3xl p-8 w-full md:w-auto md:min-w-[180px] text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center text-3xl mx-auto mb-6">01</div>
+                            <div class="text-5xl mb-4 text-pink-400"><i class="fas fa-pencil-ruler"></i></div>
+                            <h3 class="text-2xl font-bold title-font">設計</h3>
+                        </div>
+                
+                        <!-- Step 2 -->
+                        <div class="process-card relative z-10 bg-zinc-950 border border-white/10 rounded-3xl p-8 w-full md:w-auto md:min-w-[180px] text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-500 flex items-center justify-center text-3xl mx-auto mb-6">02</div>
+                            <div class="text-5xl mb-4 text-cyan-400"><i class="fas fa-layer-group"></i></div>
+                            <h3 class="text-2xl font-bold title-font">內容整合</h3>
+                        </div>
+                
+                        <!-- Step 3 -->
+                        <div class="process-card relative z-10 bg-zinc-950 border border-white/10 rounded-3xl p-8 w-full md:w-auto md:min-w-[180px] text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-3xl mx-auto mb-6">03</div>
+                            <div class="text-5xl mb-4 text-purple-400"><i class="fas fa-code"></i></div>
+                            <h3 class="text-2xl font-bold title-font">架設網站</h3>
+                        </div>
+                
+                        <!-- Step 4 -->
+                        <div class="process-card relative z-10 bg-zinc-950 border border-white/10 rounded-3xl p-8 w-full md:w-auto md:min-w-[180px] text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-cyan-500 flex items-center justify-center text-3xl mx-auto mb-6">04</div>
+                            <div class="text-5xl mb-4 text-cyan-400"><i class="fas fa-tools"></i></div>
+                            <h3 class="text-2xl font-bold title-font">檢查&修改</h3>
+                        </div>
+                
+                        <!-- Step 5 -->
+                        <div class="process-card relative z-10 bg-zinc-950 border border-white/10 rounded-3xl p-8 w-full md:w-auto md:min-w-[180px] text-center">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-purple-500 flex items-center justify-center text-3xl mx-auto mb-6">05</div>
+                            <div class="text-5xl mb-4 text-pink-400"><i class="fas fa-rocket"></i></div>
+                            <h3 class="text-2xl font-bold title-font">完成</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black border-t border-white/10 py-12">
+        <div class="max-w-7xl mx-auto px-6 text-center text-gray-500 text-sm">
+            © 2026 NEON LEGACY. All Rights Reserved.
+        </div>
+    </footer>
+
+    <!-- 語音導覽 JavaScript -->
+    <script>
+        function startVoiceNavigation() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance();
+            
+                utterance.lang = 'zh-TW';
+                utterance.rate = 1.05;
+                utterance.pitch = 1.0;
+                utterance.volume = 0.95;
+                utterance.text = `
+                    歡迎來到 UMC 團隊介紹頁面。
+                    我們是未來締造者，每一位成員都是獨一無二的星辰。
+                
+                    目前在核心成員區塊。
+                    第一位成員是何敏綺，Sylvie。
+                    第二位是吳宥璇，Sunny。
+                    第三位是陳佳暄，M.J.。
+                    第四位是蔡依伶，Jolin。
+                    第五位是王懿萱，Kyra。
+                    第六位是尤姿怡，Kelsey。
+                    第七位是鄭皓文，Danny。
+                
+                    接下來是我們的網頁設計流程，共五個步驟：
+                    第一步，設計。
+                    第二步，內容整合。
+                    第三步，架設網站。
+                    第四步，檢查與修改。
+                    第五步，完成。
+                
+                    感謝您使用語音導覽，祝您有美好的瀏覽體驗。
+                `;
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utterance);
+            } else {
+                alert("您的瀏覽器不支援語音功能");
+            }
+        }
+    </script>
+</body>
+</html>
